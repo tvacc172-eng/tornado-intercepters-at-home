@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#080d16">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>TORNADO INTERCEPTERS AT HOME 3D</title>
+<!-- three.js (3D engine). Falls back to a second CDN, then to the original 2D renderer if both fail. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>window.THREE||document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"><\/script>')</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--bg:#080d16;--panel:#111b2a;--panel2:#172438;--line:#2b3c52;--text:#eef5ff;--muted:#91a4bb;--cyan:#56d9ee;--gold:#ffc65c;--green:#7ee0a1;--red:#ff737d}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(ellipse at 50% -20%,#1d3650 0%,#0b1421 46%,#070b12 100%);color:var(--text);font-family:Inter,Arial,sans-serif}body{overflow-x:hidden}
+button{font:inherit;cursor:pointer;border:0;color:inherit}.app{max-width:1240px;margin:auto;padding:22px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#6ce5f2,#2188ad);display:grid;place-items:center;color:#07131d;font-size:23px;box-shadow:0 8px 24px #37c8e533}
+.brand-name{font:800 18px 'Barlow Condensed',sans-serif;letter-spacing:1.4px}.brand-sub{font-size:10px;letter-spacing:2px;color:var(--muted);margin-top:2px}
+.wallet{display:flex;align-items:center;gap:8px;padding:10px 15px;border:1px solid #57482d;background:#241e15;border-radius:12px;color:var(--gold);font-weight:800}
+.screen{display:none;animation:fadeUp .35s ease both}.screen.active{display:block}@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.hero{position:relative;overflow:hidden;min-height:490px;border:1px solid #34485d;border-radius:25px;background:linear-gradient(100deg,#0c1726f2 0%,#0d1b2bdc 48%,#10293ac7 100%),radial-gradient(circle at 80% 30%,#35748a,transparent 40%);display:flex;align-items:center;padding:clamp(26px,6vw,72px);box-shadow:0 28px 80px #0008}
+.hero:before{content:"";position:absolute;width:420px;height:420px;right:4%;top:5%;border-radius:50%;background:repeating-radial-gradient(ellipse,#9bc5d00d 0 10px,transparent 12px 27px);filter:blur(1px);animation:spin 40s linear infinite}
+.hero:after{content:"";position:absolute;right:12%;bottom:-110px;width:300px;height:390px;background:linear-gradient(180deg,#c5dce01a,#c5dce000);clip-path:polygon(42% 0,58% 0,68% 24%,80% 49%,100% 100%,0 100%,20% 49%,32% 24%);filter:blur(8px)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-copy{position:relative;z-index:2;max-width:620px}.eyebrow{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:15px}
+h1,h2,h3,p{margin-top:0}.hero h1{font:900 clamp(48px,8vw,92px)/.88 'Barlow Condensed',sans-serif;letter-spacing:-1px;margin:0 0 20px;text-transform:uppercase;text-shadow:0 5px 30px #0008}.hero h1 span{color:var(--cyan)}.hero p{max-width:480px;color:#b7c8d9;line-height:1.7;font-size:14px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{padding:13px 20px;border-radius:11px;font-weight:800;letter-spacing:.3px;transition:transform .18s,filter .18s,box-shadow .18s;background:#26384d;border:1px solid #41566e}.btn:hover{transform:translateY(-2px);filter:brightness(1.12);box-shadow:0 9px 24px #0004}.btn:active{transform:translateY(0) scale(.98)}.btn.primary{background:linear-gradient(135deg,#68e4ee,#32a9c5);border-color:#8cf3f5;color:#06141d;box-shadow:0 8px 25px #32bfd633}.btn.gold{background:linear-gradient(135deg,#ffd982,#e6a83b);color:#241809;border-color:#ffe1a0}.btn.danger{background:#48232b;border-color:#71353d}.btn.small{padding:9px 13px;font-size:12px}.feature-row{display:flex;gap:20px;flex-wrap:wrap;margin-top:35px;color:#9eb1c6;font-size:11px}.feature-row span{display:flex;align-items:center;gap:7px}.dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:15px;margin:12px 0 22px}.section-head h2{font:800 38px 'Barlow Condensed',sans-serif;letter-spacing:.5px;margin:0}.section-head p{color:var(--muted);font-size:13px;margin:4px 0 0}
+.panel{background:linear-gradient(145deg,#142135,#0e1827);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 12px 35px #0003}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.shop-card,.car-card{background:linear-gradient(145deg,#19283b,#111c2b);border:1px solid #2c4057;border-radius:15px;padding:18px;display:flex;justify-content:space-between;gap:15px;align-items:center;transition:border-color .2s,transform .2s}.shop-card:hover,.car-card:hover{border-color:#5b829b;transform:translateY(-2px)}
+.item-icon{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:#22394c;font-size:24px;flex:none}.item-copy{flex:1;min-width:0}.item-copy h3{font-size:15px;margin:0 0 5px}.item-copy p{font-size:12px;color:var(--muted);line-height:1.5;margin:0}.level{font-size:10px;color:var(--cyan);font-weight:800;letter-spacing:1px;margin-top:8px}
+.price{color:var(--gold);font-weight:800;font-size:13px;white-space:nowrap;margin-bottom:8px;text-align:right}
+.car-art{height:92px;border-radius:12px;background:linear-gradient(135deg,#23394d,#101c2b);display:grid;place-items:center;margin-bottom:12px;position:relative;overflow:hidden}.car-art:after{content:"";position:absolute;inset:auto 10% 17px;height:1px;background:#7ce5f455;box-shadow:0 0 20px #6de6ff}.mini-truck{width:125px;height:35px;border-radius:10px 18px 12px 12px;background:var(--car,#b9c4cf);position:relative;box-shadow:inset -15px -5px #0002,0 10px 20px #0007;transform:skewX(-7deg)}.mini-truck:before{content:"";position:absolute;left:42px;top:-12px;width:43px;height:20px;border-radius:8px 9px 2px 2px;background:#a9d7e8;opacity:.8;border:2px solid #263746}.mini-truck:after{content:"";position:absolute;left:17px;bottom:-7px;width:19px;height:15px;border-radius:50%;background:#080d13;border:3px solid #8798a7;box-shadow:70px 0 #080d13,70px 0 0 3px #8798a7}
+.car-card{display:block}.car-card.selected{border-color:var(--cyan);box-shadow:0 0 0 1px #56d9ee33,0 10px 30px #0004}.car-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}.statline{font-size:11px;color:#a9bbce;display:flex;gap:10px;flex-wrap:wrap}
+.backline{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.backline .btn{padding:9px 13px}
+.game-wrap{background:#0b1420;border:1px solid #34485d;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px #0007}.hud{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:12px;background:#111e2e;border-bottom:1px solid #2b3e53}.hud-box{background:#19283a;border:1px solid #2d4055;border-radius:10px;padding:9px 11px;min-width:0}.hud-label{font-size:9px;letter-spacing:1.4px;color:#8da3ba;font-weight:800}.hud-value{font-size:17px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}.meter{height:4px;background:#314357;border-radius:5px;margin-top:6px;overflow:hidden}.meter span{display:block;height:100%;width:100%;background:var(--green);transition:width .2s}
+#gameCanvas{display:block;width:auto;max-width:100%;height:min(calc(100vh - 250px),calc((100vw - 60px)*.62));min-height:200px;aspect-ratio:1000/620;background:#263b43;touch-action:none}
+@media(max-width:700px){#gameCanvas{height:calc((100vw - 30px)*.62)}}
+.game-footer{padding:12px 15px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:#101b29;color:#9db0c5;font-size:11px}.key{display:inline-block;padding:3px 6px;border:1px solid #40536a;border-radius:5px;color:#e5f0fb;background:#1a293a;font-weight:800;margin:0 2px}
+.result{text-align:center;padding:50px 20px}.result .big{font:900 64px 'Barlow Condensed',sans-serif;margin:0 0 8px}.result p{color:var(--muted)}.reward{font-size:27px;color:var(--gold);font-weight:900;margin:22px 0}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#e5f7ff;color:#08131c;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:800;box-shadow:0 10px 35px #0008;transition:.25s;z-index:20}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){.app{padding:13px}.topbar{margin-bottom:14px}.hero{min-height:500px;padding:27px}.hero:before{right:-35%;top:25%}.grid{grid-template-columns:1fr}.hud{grid-template-columns:repeat(3,1fr)}.hud-box:nth-child(4),.hud-box:nth-child(5){display:block}.section-head{align-items:start;flex-direction:column}.brand-name{font-size:15px}}
+/* ---------- MOBILE / TOUCH SUPPORT ---------- */
+html,body{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+button{touch-action:manipulation}
+.stage{position:relative}
+.touch-controls{display:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+body.touch .touch-controls{display:block;position:relative;height:190px;background:linear-gradient(180deg,#0f1b2a,#0b1420);border-top:1px solid #2b3e53}
+.joy-base{position:absolute;left:max(22px,env(safe-area-inset-left));top:50%;margin-top:-70px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,#1b2d41cc 0%,#122032cc 70%);border:2px solid #4b6a85;touch-action:none;box-shadow:0 0 0 6px #56d9ee0f}
+.joy-base:before{content:"";position:absolute;inset:34px;border-radius:50%;border:1px dashed #56d9ee44}
+.joy-knob{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8cf3f5,#2a97b3);border:2px solid #c9fbff;box-shadow:0 6px 18px #0009;pointer-events:none;will-change:transform}
+.nitro-btn{position:absolute;right:max(26px,env(safe-area-inset-right));top:50%;margin-top:-56px;width:112px;height:112px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffd982,#d98f1f);border:3px solid #ffe6ae;color:#2a1a06;font:900 20px 'Barlow Condensed',sans-serif;letter-spacing:1.5px;display:grid;place-items:center;text-align:center;line-height:1;box-shadow:0 8px 24px #0008;touch-action:none;-webkit-user-select:none;user-select:none}
+.nitro-btn small{display:block;font:700 10px Inter,sans-serif;letter-spacing:1px;margin-top:4px;opacity:.75}
+.nitro-btn.active{transform:scale(.94);filter:brightness(1.2);box-shadow:0 0 30px #ffc65caa}
+.nitro-btn.empty{filter:grayscale(.9) brightness(.6)}
+.nitro-meter{position:absolute;left:50%;top:14px;width:min(180px,30vw);height:6px;margin-left:calc(min(180px,30vw)/-2);background:#314357;border-radius:6px;overflow:hidden}
+.nitro-meter span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffc65c,#ffe39a)}
+.nitro-label{position:absolute;left:0;right:0;top:24px;text-align:center;font-size:9px;letter-spacing:1.6px;color:#8da3ba;font-weight:800;pointer-events:none}
+.rotate-tip{display:none;text-align:center;font-size:11px;color:var(--gold);padding:8px 10px;background:#241e15;border-bottom:1px solid #57482d;font-weight:700;letter-spacing:.4px}
+@media(pointer:coarse){.btn{min-height:44px}.btn.small{min-height:40px}.wallet{padding:8px 12px}}
+@media(max-width:700px){.app{padding-left:max(13px,env(safe-area-inset-left));padding-right:max(13px,env(safe-area-inset-right));padding-bottom:max(13px,env(safe-area-inset-bottom))}.hud{gap:6px;padding:8px}.hud-box{padding:7px 9px}.hud-value{font-size:15px}.shop-card{flex-wrap:wrap}.result .big{font-size:48px}.section-head h2{font-size:32px}.actions .btn{flex:1 1 140px}.game-footer{font-size:10px}.backline .eyebrow{margin-bottom:4px}.backline>div>div:last-child{font-size:20px!important}}
+@media(max-width:700px) and (orientation:portrait){body.touch .rotate-tip{display:block}}
+/* phone landscape: controls float over the canvas, everything fits one screen */
+@media(orientation:landscape) and (max-height:520px){
+ body.touch .app{padding:6px max(10px,env(safe-area-inset-right)) 6px max(10px,env(safe-area-inset-left))}
+ body.touch .topbar,body.touch .game-footer,body.touch #gameScreen .backline .eyebrow{display:none}
+ body.touch #gameScreen .backline{position:absolute;right:max(10px,env(safe-area-inset-right));top:max(8px,env(safe-area-inset-top));z-index:6;margin:0}
+ body.touch #gameScreen .backline>div:first-child{display:none}
+ body.touch .game-wrap{border-radius:12px}
+ body.touch .hud{grid-template-columns:repeat(5,1fr);padding:5px;gap:5px}
+ body.touch .hud-box{padding:4px 8px}.hud-label{font-size:8px}body.touch .hud-value{font-size:13px;margin-top:1px}body.touch .meter{margin-top:3px}
+ body.touch .stage{display:flex;justify-content:center;background:#0b1420}
+ body.touch #gameCanvas{width:auto;max-width:100%;height:calc(100dvh - 72px);max-height:calc(100vh - 72px);aspect-ratio:1000/620}
+ body.touch .touch-controls{position:absolute;inset:0;height:auto;background:none;border:0;pointer-events:none}
+ body.touch .joy-base,body.touch .nitro-btn{pointer-events:auto;opacity:.82}
+ body.touch .joy-base{left:max(26px,env(safe-area-inset-left));top:auto;bottom:18px;margin:0;width:128px;height:128px}
+ body.touch .nitro-btn{right:max(30px,env(safe-area-inset-right));top:auto;bottom:22px;margin:0;width:96px;height:96px;font-size:18px}
+ body.touch .nitro-meter,body.touch .nitro-label{display:none}
+ body.touch #gameScreen .hud{padding-right:5px}
+}
+/* ---------- v5: extra mobile support ---------- */
+button{-webkit-user-select:none;user-select:none}
+.backbtns{display:flex;gap:8px;align-items:center}
+.joy-zone{position:absolute;top:0;bottom:0;left:0;width:55%;pointer-events:none;touch-action:none}
+body.lefty .joy-zone{left:auto;right:0}
+body.touch.float-joy .joy-zone{pointer-events:auto}
+body.touch.float-joy .joy-base{pointer-events:none;opacity:.35}
+body.touch.float-joy .joy-base.active{opacity:.95}
+.joy-base.active{box-shadow:0 0 0 6px #56d9ee22,0 0 24px #56d9ee33}
+body.touch .joy-base{width:calc(140px*var(--ctl,1));height:calc(140px*var(--ctl,1));margin-top:calc(-70px*var(--ctl,1))}
+body.touch .joy-knob{width:calc(64px*var(--ctl,1));height:calc(64px*var(--ctl,1));margin:calc(-32px*var(--ctl,1)) 0 0 calc(-32px*var(--ctl,1))}
+body.touch .nitro-btn{width:calc(112px*var(--ctl,1));height:calc(112px*var(--ctl,1));margin-top:calc(-56px*var(--ctl,1))}
+body.lefty .joy-base{left:auto;right:max(22px,env(safe-area-inset-right))}
+body.lefty .nitro-btn{right:auto;left:max(26px,env(safe-area-inset-left))}
+.pause-overlay{display:none;position:absolute;inset:0;z-index:8;background:rgba(5,10,16,.74);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);align-items:center;justify-content:center;text-align:center}
+.pause-overlay.show{display:flex}
+.pause-card{padding:20px}
+.pause-title{font:900 46px 'Barlow Condensed',sans-serif;letter-spacing:1px;line-height:1}
+.set-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 2px;border-bottom:1px solid #22344a;flex-wrap:wrap}
+.set-row:last-child{border-bottom:0}
+.set-copy h3{margin:0 0 4px;font-size:15px}
+.set-copy p{margin:0;font-size:12px;color:var(--muted);line-height:1.55;max-width:460px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{padding:10px 15px;min-height:42px;border-radius:10px;background:#1a293a;border:1px solid #33475d;font-weight:800;font-size:12px;letter-spacing:.3px}
+.seg button.on{background:linear-gradient(135deg,#68e4ee,#32a9c5);color:#06141d;border-color:#8cf3f5}
+@media(max-width:700px){.set-row{flex-direction:column;align-items:flex-start}.pause-title{font-size:38px}.backbtns .btn{padding:8px 10px}}
+@media(orientation:landscape) and (max-height:520px){
+ body.touch .joy-base{width:calc(128px*var(--ctl,1));height:calc(128px*var(--ctl,1));margin:0}
+ body.touch .nitro-btn{width:calc(96px*var(--ctl,1));height:calc(96px*var(--ctl,1));margin:0}
+ body.touch.lefty .joy-base{left:auto;right:max(26px,env(safe-area-inset-right))}
+ body.touch.lefty .nitro-btn{right:auto;left:max(30px,env(safe-area-inset-left))}
+ body.touch #gameScreen .backline{top:calc(max(8px,env(safe-area-inset-top)) + 56px)}
+ body.touch #gameScreen .backbtns .btn{padding:6px 10px;min-height:34px;opacity:.88}
+ .pause-title{font-size:30px}.pause-card{padding:8px}
+}
+/* ---------- v6: explore mode HUD, map, wind gauge, airbag button ---------- */
+.viewport{position:relative;line-height:0;width:fit-content;max-width:100%;margin:0 auto}
+body.in-game .topbar{display:none}
+body.in-game .app{padding-top:12px}
+.hud-value{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.minimap,.windgauge,.exinfo{display:none;position:absolute}
+body.mode-explore .minimap,body.mode-explore .windgauge{display:block}
+body.mode-explore .exinfo{display:flex}
+.minimap{left:10px;bottom:10px;width:150px;height:150px;z-index:7;border-radius:14px;border:2px solid #56d9ee99;box-shadow:0 6px 20px #000a;background:#2f4a33;cursor:pointer;touch-action:manipulation}
+.windgauge{left:50%;top:8px;transform:translateX(-50%);width:200px;height:auto;z-index:6;pointer-events:none}
+.exinfo{right:10px;bottom:10px;z-index:6;gap:10px;align-items:center;line-height:1.2;font-size:13px;font-weight:800;background:rgba(8,13,22,.74);border:1px solid #33475d;border-radius:12px;padding:6px 8px 6px 12px;color:#eef5ff}
+.exinfo button.on{background:linear-gradient(135deg,#ffd982,#e6a83b);color:#241809;border-color:#ffe1a0}
+body.touch .exinfo{display:none!important}
+.bag-btn{display:none;position:absolute;width:calc(84px*var(--ctl,1));height:calc(84px*var(--ctl,1));border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c4,#e0a82a);border:3px solid #fff0c0;color:#2a1a06;font:900 15px 'Barlow Condensed',sans-serif;letter-spacing:1px;place-items:center;align-content:center;text-align:center;line-height:1;box-shadow:0 8px 20px #0008;touch-action:none;-webkit-user-select:none;user-select:none;right:max(36px,env(safe-area-inset-right));top:10px}
+.bag-btn small{display:block;font:700 9px Inter,sans-serif;margin-top:3px;opacity:.75}
+.bag-btn.on{background:radial-gradient(circle at 35% 30%,#b6ffd0,#2fa86a);border-color:#d8ffe8;box-shadow:0 0 26px #4fe39a99}
+body.touch.mode-explore .bag-btn{display:grid}
+body.touch.mode-explore .touch-controls{height:236px}
+body.touch.mode-explore .nitro-btn{top:auto;bottom:12px;margin-top:0}
+body.touch.mode-explore.lefty .bag-btn{right:auto;left:max(36px,env(safe-area-inset-left))}
+@media(max-width:700px){.windgauge{width:172px}.minimap{left:8px;bottom:8px}}
+@media(orientation:landscape) and (max-height:520px){
+ body.touch.mode-explore .touch-controls{height:auto}
+ body.touch.mode-explore .bag-btn{top:auto;bottom:calc(22px + 96px*var(--ctl,1) + 12px);right:max(36px,env(safe-area-inset-right))}
+ body.touch.mode-explore.lefty .bag-btn{right:auto;left:max(36px,env(safe-area-inset-left))}
+ body.touch.mode-explore .minimap{bottom:calc(18px + 128px*var(--ctl,1) + 10px)}
+ body.touch .windgauge{width:150px;top:4px}
+}
+/* ---------- v7: accounts, panels, announcements ---------- */
+.topright{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.field{display:block;width:100%;max-width:440px;padding:12px 14px;border-radius:10px;border:1px solid #33475d;background:#0f1a28;color:var(--text);font:inherit;font-size:14px;margin:8px 0}
+textarea.field{max-width:640px;resize:vertical}
+.muted{color:var(--muted);font-size:12px;line-height:1.6;margin:4px 0}
+.errtxt{color:var(--red);font-size:12px;font-weight:700;margin:6px 0}
+.badge{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:99px;background:#26384d;border:1px solid #41566e;font-size:10px;font-weight:800;letter-spacing:1px}
+.acct-head{display:flex;gap:14px;align-items:center;margin-bottom:12px}.acct-head h3{margin:0 0 2px;font-size:18px}.acct-head p{margin:0}
+.avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none}.avatar.ph{display:grid;place-items:center;background:linear-gradient(145deg,#6ce5f2,#2188ad);color:#07131d;font-weight:900;font-size:24px}
+.tblwrap{overflow-x:auto}.tbl{border-collapse:collapse;width:100%;font-size:12px}.tbl th{text-align:left;color:var(--muted);font-size:10px;letter-spacing:1px;padding:6px 8px;border-bottom:1px solid #2b3c52}.tbl td{padding:7px 8px;border-bottom:1px solid #1d2c40;vertical-align:middle}.tbl td .btn{margin:0 4px 4px 0}
+.ann-row{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1d2c40;font-size:13px;line-height:1.5}.ann-row small{color:var(--muted)}
+.announce{position:fixed;top:10px;left:50%;transform:translate(-50%,-140%);z-index:40;display:flex;gap:12px;align-items:center;max-width:min(580px,92vw);padding:12px 14px;border-radius:14px;background:#241e15;border:1px solid #8a6b2d;color:#ffe2a6;box-shadow:0 12px 40px #000a;font-size:13px;line-height:1.5;transition:transform .35s}
+.announce.show{transform:translate(-50%,0)}
+#camBtn{display:none}body.mode-explore #camBtn{display:inline-block}
+.announce{top:84px}body.in-game .announce{top:10px}
+.tbl th,.tbl td{white-space:nowrap}
+@media(max-width:700px){.topbar{flex-wrap:wrap}.topright{width:100%;justify-content:flex-start}.brand-sub{display:none}.announce{top:auto;bottom:84px;transform:translate(-50%,160%)}.announce.show{transform:translate(-50%,0)}body.in-game .announce{bottom:auto;top:10px;transform:translate(-50%,-140%)}body.in-game .announce.show{transform:translate(-50%,0)}.topright .btn.small{padding:9px 11px;font-size:11px}.topright .wallet{margin-left:auto;padding:8px 12px}.hero-copy{min-width:0;width:100%}.hero h1{font-size:clamp(32px,10.4vw,56px)}.actions .btn{flex:1 1 130px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="brand-mark">〰</div><div><div class="brand-name">STORM RESPONSE DIVISION</div><div class="brand-sub">FIELD OPERATIONS // EST. 2026</div></div></div>
+  <div class="topright"><button class="btn small" id="adminBtn" style="display:none" onclick="openScreen('adminScreen')">🛡 ADMIN</button><button class="btn small" id="ownerBtn" style="display:none" onclick="openScreen('ownerScreen')">👑 OWNER</button><button class="btn small" id="acctBtn" onclick="openScreen('accountScreen')">👤 SIGN IN</button><button class="btn small" id="saveBtn" onclick="manualSave()">💾 SAVE</button><div class="wallet">✦ <span id="coinCount">0</span> COINS</div></div>
+</header>
+
+<section id="homeScreen" class="screen active">
+  <div class="hero"><div class="hero-copy">
+    <div class="eyebrow">⚠ Severe weather operations</div>
+    <h1>TORNADO<br><span>INTERCEPTERS</span><br>AT HOME</h1>
+    <p>Gear up, tune your interceptor, and head into the storm. Collect research data, dodge dangerous debris, and build the ultimate storm-chasing fleet.</p>
+    <div class="actions"><button class="btn primary" onclick="startGame()">▶ &nbsp; MISSION</button><button class="btn primary" onclick="startExplore()">🌪 &nbsp; EXPLORE</button><button class="btn" onclick="openScreen('garageScreen')">▰ &nbsp; GARAGE</button><button class="btn gold" onclick="openScreen('shopScreen')">✦ &nbsp; UPGRADE SHOP</button><button class="btn" onclick="openScreen('settingsScreen')">⚙ &nbsp; SETTINGS</button></div>
+    <div class="feature-row"><span><i class="dot"></i> Progress saves automatically</span><span>⚡ Vehicle upgrades</span><span>🌪 Dynamic 3D storm runs</span></div>
+  </div></div>
+<div class="panel" id="annPanel" style="display:none;margin-top:14px"><div class="eyebrow">📢 ANNOUNCEMENTS</div><div id="annList"></div></div>
+</section>
+
+<section id="accountScreen" class="screen">
+  <div class="backline"><div class="section-head"><div><h2>ACCOUNT</h2><p id="acctSub">Sign in to save your garage to the cloud.</p></div></div><button class="btn small" onclick="openScreen('homeScreen')">← HOME</button></div>
+  <div class="panel" id="acctPanel"></div>
+</section>
+
+<section id="adminScreen" class="screen">
+  <div class="backline"><div class="section-head"><div><h2>🛡 ADMIN PANEL</h2><p>Staff only: message everyone playing and see players.</p></div></div><button class="btn small" onclick="openScreen('homeScreen')">← HOME</button></div>
+  <div class="panel" id="adminPanel"></div>
+</section>
+
+<section id="ownerScreen" class="screen">
+  <div class="backline"><div class="section-head"><div><h2>👑 OWNER PANEL</h2><p>Owner only: manage admins and players.</p></div></div><button class="btn small" onclick="openScreen('homeScreen')">← HOME</button></div>
+  <div class="panel" id="ownerPanel"></div>
+</section>
+
+<section id="shopScreen" class="screen">
+  <div class="backline"><div class="section-head"><div><h2>UPGRADE SHOP</h2><p id="shopCarLine">Improve your interceptor before the next deployment.</p></div></div><button class="btn small" onclick="openScreen('homeScreen')">← HOME</button></div>
+  <div class="grid" id="upgradeList"></div>
+</section>
+
+<section id="garageScreen" class="screen">
+  <div class="backline"><div class="section-head"><div><h2>VEHICLE GARAGE</h2><p>Choose the ride you'll take into the storm.</p></div></div><button class="btn small" onclick="openScreen('homeScreen')">← HOME</button></div>
+  <div class="grid" id="carList"></div>
+</section>
+
+<section id="settingsScreen" class="screen">
+  <div class="backline"><div class="section-head"><div><h2>SETTINGS</h2><p>Controls, comfort and performance. Saved on this device.</p></div></div><button class="btn small" onclick="openScreen('homeScreen')">← HOME</button></div>
+  <div class="panel" id="settingsList"></div>
+</section>
+
+<section id="gameScreen" class="screen">
+  <div class="backline"><div><div class="eyebrow">LIVE DEPLOYMENT</div><div id="gameTitle" style="font:800 25px 'Barlow Condensed'">TORNADO INTERCEPT MISSION</div></div><div class="backbtns"><button class="btn small" id="camBtn" onclick="resetCam()" title="Reset camera (V)">⟲ CAM</button><button class="btn small" id="fsBtn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button><button class="btn small" onclick="togglePause()">⏸ PAUSE</button><button class="btn small danger" onclick="leaveRun()">EXIT RUN</button></div></div>
+  <div class="game-wrap">
+    <div class="hud">
+      <div class="hud-box"><div class="hud-label">RESEARCH DATA</div><div class="hud-value" id="dataHud">0 / 10</div><div class="meter"><span id="dataBar"></span></div></div>
+      <div class="hud-box"><div class="hud-label">SCORE</div><div class="hud-value" id="scoreHud">0</div></div>
+      <div class="hud-box"><div class="hud-label">FUEL</div><div class="hud-value" id="fuelHud">100%</div><div class="meter"><span id="fuelBar"></span></div></div>
+      <div class="hud-box"><div class="hud-label">HULL</div><div class="hud-value" id="healthHud">100%</div><div class="meter"><span id="healthBar"></span></div></div>
+      <div class="hud-box"><div class="hud-label">TIME LEFT</div><div class="hud-value" id="timeHud">60s</div></div>
+    </div>
+    <div class="rotate-tip">↻ Tip: rotate your phone sideways for a bigger view</div>
+    <div class="stage">
+      <div class="viewport">
+        <canvas id="gameCanvas" width="1000" height="620"></canvas>
+        <canvas id="windGauge" class="windgauge" width="220" height="132"></canvas>
+        <canvas id="miniMap" class="minimap" width="150" height="150" onclick="toggleBigMap()" title="Tap to enlarge (M)"></canvas>
+        <div class="exinfo" id="exInfo"><span id="exSpeed">0 mph</span><button class="btn small" id="bagBtnDesk" onclick="toggleBags()">AIRBAGS &middot; E</button></div>
+      </div>
+      <div class="touch-controls" id="touchControls">
+        <div class="joy-zone" id="joyZone"></div>
+        <div class="nitro-meter"><span id="nitroBar"></span></div>
+        <div class="nitro-label">NITRO</div>
+        <div class="joy-base" id="joyBase"><div class="joy-knob" id="joyKnob"></div></div>
+        <div class="nitro-btn" id="nitroBtn">NITRO<small>HOLD</small></div>
+        <div class="bag-btn" id="bagBtn">AIR<br>BAGS<small>TAP</small></div>
+      </div>
+      <div class="pause-overlay" id="pauseOverlay"><div class="pause-card"><div class="eyebrow">GAME PAUSED</div><div class="pause-title">TAKE A BREATH</div><div class="actions" style="justify-content:center;margin-top:16px"><button class="btn primary" onclick="setPaused(false)">▶ &nbsp; RESUME</button><button class="btn" onclick="manualSave()">💾 &nbsp; SAVE</button><button class="btn" onclick="replayRun()">↻ &nbsp; RESTART</button><button class="btn danger" onclick="leaveRun()">EXIT</button></div></div></div>
+    </div>
+    <div class="game-footer"><span id="controlsHint"><span class="key">WASD</span> / <span class="key">↑↓←→</span> Drive &nbsp; <span class="key">SPACE</span> Nitro</span><span id="gameMessage">Collect 10 research samples and survive.</span></div>
+  </div>
+</section>
+
+<section id="resultsScreen" class="screen">
+  <div class="panel result"><div class="eyebrow">MISSION REPORT</div><div class="big" id="resultTitle">RUN COMPLETE</div><p id="resultText">Your storm data has been secured.</p><div class="reward" id="rewardText">+0 COINS</div><p id="resultStats"></p><div class="actions" style="justify-content:center"><button class="btn primary" onclick="replayRun()">↻ PLAY AGAIN</button><button class="btn" onclick="openScreen('homeScreen')">⌂ HOME</button><button class="btn gold" onclick="openScreen('shopScreen')">✦ SHOP UPGRADES</button></div></div>
+</section>
+</div>
+<div class="toast" id="toast"></div>
+<div class="announce" id="announce"><div><b id="annTitle"></b> <span id="annText"></span></div><button class="btn small" onclick="closeAnn()">✕</button></div>
+
+<script>
+"use strict";
+const SAVE_PREFIX="tornado_intercepters_save_v3_",SAVE_OLD="tornado_intercepters_save_v2";let saveUser="guest";
+const cars={
+ silverado:{name:"Silverado Interceptor",price:0,color:"#b9c4cf",health:100,fuel:100,speed:4.2,desc:"The dependable all-weather starter truck."},
+ bronco:{name:"Bronco Interceptor",price:1800,color:"#d9a34f",health:115,fuel:110,speed:4.6,desc:"Quick handling with a little extra protection."},
+ titan:{name:"Titan Heavy Interceptor",price:4000,color:"#7f9da8",health:165,fuel:125,speed:3.8,desc:"A heavy-duty storm platform built to take hits."},
+ phantom:{name:"Phantom X",price:7500,color:"#9d8de0",health:125,fuel:120,speed:5.2,desc:"A fast, advanced interceptor for aggressive runs."}
+};
+const upgrades={
+ armor:{name:"Reinforced Armor",icon:"🛡️",desc:"+25 maximum hull per level. Reduces debris damage.",base:350},
+ tank:{name:"Extended Fuel Tank",icon:"⛽",desc:"+30 maximum fuel per level.",base:300},
+ engine:{name:"Engine Tuning",icon:"⚙️",desc:"+0.35 driving speed per level.",base:450},
+ nitro:{name:"Nitro Capacity",icon:"⚡",desc:"+25 maximum nitro per level.",base:400}
+};
+let save=loadSave(),gameRunning=false,keys={},player=null,world=null,lastFrame=0,toastTimer=null;
+/* ---------- v5: settings, pause, haptics, tilt steering, gamepad, fullscreen, wake lock ---------- */
+const SETTINGS_KEY="tornado_intercepters_settings_v1";
+let settings=loadSettings(),paused=false,loopId=0,wakeLock=null,padState=null;
+function loadSettings(){try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY))||{};return{joy:s.joy==="float"?"float":"fixed",lefty:!!s.lefty,size:[.85,1,1.2].includes(s.size)?s.size:1,haptics:s.haptics!==false,tilt:!!s.tilt,quality:["auto","high","low"].includes(s.quality)?s.quality:"auto",units:s.units==="kph"?"kph":"mph",cam:s.cam==="high"?"high":"chase"}}catch{return{joy:"fixed",lefty:false,size:1,haptics:true,tilt:false,quality:"auto",units:"mph",cam:"chase"}}}
+function persistSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}catch{}}
+function applySettings(){
+ const b=document.body;b.classList.toggle("lefty",settings.lefty);b.classList.toggle("float-joy",settings.joy==="float");b.style.setProperty("--ctl",String(settings.size));
+ const hint=document.getElementById("controlsHint");
+ if(hint&&isTouchDevice)hint.innerHTML=(settings.joy==="float"?"Touch &amp; drag the "+(settings.lefty?"right":"left")+" side to drive":"<b>"+(settings.lefty?"Right":"Left")+" stick</b> to drive")+" &nbsp;&bull;&nbsp; <b>NITRO</b> to boost";
+}
+function buzz(p){if(settings.haptics&&navigator.vibrate){try{navigator.vibrate(p)}catch{}}}
+
+/* pause */
+function setPaused(p){
+ if(!gameRunning||!(world||ex))return;
+ paused=!!p;resetTouch();tilt.base=null;tilt.x=0;tilt.y=0;
+ const o=document.getElementById("pauseOverlay");if(o)o.classList.toggle("show",paused);
+ lastFrame=performance.now();if(!paused&&R)R.last=performance.now();
+}
+function togglePause(){setPaused(!paused)}
+
+/* tilt steering (DeviceOrientation). Calibrates to the pose you hold when a run starts / resumes. */
+const tilt={ok:false,x:0,y:0,base:null,listening:false};
+function screenAngle(){const a=(screen.orientation&&typeof screen.orientation.angle==="number")?screen.orientation.angle:(window.orientation||0);return((a%360)+360)%360}
+function tiltVec(beta,gamma,angle,base){
+ let db=beta-base.beta,dg=gamma-base.gamma;db=((db+540)%360)-180;dg=((dg+540)%360)-180;
+ let x,y;
+ if(angle===90){x=db;y=-dg}else if(angle===180){x=-dg;y=-db}else if(angle===270){x=-db;y=dg}else{x=dg;y=db}
+ const f=v=>{const a=Math.abs(v)<3?0:(Math.abs(v)-3)/20;return Math.sign(v)*Math.min(1,a)};
+ return{x:f(x),y:f(y)};
+}
+function onTilt(e){
+ if(e.beta==null||e.gamma==null)return;
+ tilt.ok=true;const a=screenAngle();
+ if(!tilt.base||tilt.base.angle!==a)tilt.base={beta:e.beta,gamma:e.gamma,angle:a};
+ const v=tiltVec(e.beta,e.gamma,a,tilt.base);tilt.x=v.x;tilt.y=v.y;
+}
+function enableTilt(){
+ if(tilt.listening)return Promise.resolve(true);
+ const add=()=>{window.addEventListener("deviceorientation",onTilt);tilt.listening=true;return true};
+ if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"){
+  return DeviceOrientationEvent.requestPermission().then(r=>r==="granted"?add():false).catch(()=>false);
+ }
+ if(!("DeviceOrientationEvent" in window))return Promise.resolve(false);
+ return Promise.resolve(add());
+}
+function disableTilt(){window.removeEventListener("deviceorientation",onTilt);tilt.listening=false;tilt.ok=false;tilt.x=0;tilt.y=0;tilt.base=null}
+
+/* gamepad (Bluetooth / USB controllers work on phones and desktop) */
+const pad={start:false};
+window.addEventListener("gamepadconnected",()=>notify("Controller connected"));
+function readPad(){
+ let list=[];try{list=navigator.getGamepads?navigator.getGamepads():[]}catch{}let g=null;
+ for(const p of list){if(p&&p.connected){g=p;break}}
+ if(!g)return null;
+ const down=i=>!!(g.buttons[i]&&g.buttons[i].pressed);
+ let x=g.axes[0]||0,y=g.axes[1]||0;if(Math.hypot(x,y)<.2){x=0;y=0}
+ if(down(14))x=-1;if(down(15))x=1;if(down(12))y=-1;if(down(13))y=1;let cx=g.axes[2]||0,cy=g.axes[3]||0;if(Math.hypot(cx,cy)<.25){cx=0;cy=0}
+ return{x,y,nitro:down(0)||down(5)||down(7),start:down(9),bag:down(2),map:down(3),cx,cy};
+}
+
+/* fullscreen + wake lock */
+function fsEl(){return document.fullscreenElement||document.webkitFullscreenElement}
+function toggleFullscreen(){
+ const d=document,el=d.documentElement;
+ if(fsEl()){const ex=d.exitFullscreen||d.webkitExitFullscreen;if(ex)ex.call(d);return}
+ const req=el.requestFullscreen||el.webkitRequestFullscreen;
+ if(!req){notify("Fullscreen isn't available here. On iPhone: Share, then Add to Home Screen.");return}
+ const lock=()=>{try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock("landscape").catch(()=>{})}catch{}};
+ try{const p=req.call(el);if(p&&p.then)p.then(lock).catch(()=>notify("Fullscreen was blocked by the browser"));else lock()}catch{notify("Fullscreen was blocked by the browser")}
+}
+async function lockScreen(){try{if("wakeLock" in navigator&&!wakeLock&&document.visibilityState==="visible"){wakeLock=await navigator.wakeLock.request("screen");wakeLock.addEventListener("release",()=>{wakeLock=null})}}catch{}}
+function unlockScreen(){try{if(wakeLock){wakeLock.release();wakeLock=null}}catch{}}
+
+/* settings screen */
+function segCtl(key,opts){
+ const d=document.createElement("div");d.className="seg";
+ for(const o of opts){const b=document.createElement("button");b.textContent=o[0];if(settings[key]===o[1])b.classList.add("on");b.addEventListener("click",()=>setSetting(key,o[1]));d.appendChild(b)}
+ return d;
+}
+function setRow(title,desc,ctl){
+ const r=document.createElement("div");r.className="set-row";
+ const c=document.createElement("div");c.className="set-copy";
+ const h=document.createElement("h3");h.textContent=title;const p=document.createElement("p");p.textContent=desc;c.append(h,p);r.appendChild(c);
+ if(ctl)r.appendChild(ctl);return r;
+}
+function renderSettings(){
+ const root=document.getElementById("settingsList");if(!root)return;
+ root.innerHTML="";
+ root.appendChild(saveRow());
+ root.appendChild(setRow("Joystick style","Fixed stays in one spot. Floating appears wherever your thumb touches the control side.",segCtl("joy",[["Fixed","fixed"],["Floating","float"]])));
+ root.appendChild(setRow("Control side","Choose which thumb drives. Nitro goes on the opposite side.",segCtl("lefty",[["Joystick left",false],["Joystick right",true]])));
+ root.appendChild(setRow("Control size","Resize the joystick and nitro button.",segCtl("size",[["Small",.85],["Medium",1],["Large",1.2]])));
+ root.appendChild(setRow("Vibration","Haptic feedback on hits, pickups and mission end. Works on Android; iPhone doesn't allow it.",segCtl("haptics",[["On",true],["Off",false]])));
+ const tb=document.createElement("div");tb.className="seg";const tbtn=document.createElement("button");tbtn.textContent=settings.tilt?"On":"Off";if(settings.tilt)tbtn.classList.add("on");tbtn.addEventListener("click",toggleTilt);tb.appendChild(tbtn);
+ root.appendChild(setRow("Tilt steering (beta)","Tilt your phone to steer whenever you're not touching the joystick. It recalibrates to how you're holding the phone each time a run starts or resumes.",tb));
+ root.appendChild(setRow("Wind & speed units","Used by the wind meter, speed and distances in Explore mode.",segCtl("units",[["mph","mph"],["km/h","kph"]])));
+ root.appendChild(setRow("Explore camera","Chase sits close behind the truck. High pulls back so you can see more of the storm.",segCtl("cam",[["Chase","chase"],["High","high"]])));
+ root.appendChild(setRow("Graphics quality","Auto lowers effects if the frame rate drops. Pick Low on older phones, High to keep everything on.",segCtl("quality",[["Auto","auto"],["High","high"],["Low","low"]])));
+ root.appendChild(setRow("Other ways to play","Keyboard: WASD or arrows to drive, Space for nitro, E for airbags, M for the map, Q / R or drag to turn the camera, V to reset it (Explore), P or Esc to pause. Controller (Bluetooth or USB): stick or D-pad to drive, A / RT / RB for nitro, X for airbags, Y for the map, right stick for the camera, Start to pause. iPhone: use Share, then Add to Home Screen, for a true fullscreen app.",null));
+}
+function setSetting(k,v){
+ settings[k]=v;persistSettings();applySettings();
+ if(k==="quality"&&R){applyQuality(startLevel());R.slow=0;R.fps=60}
+ if(k==="haptics"&&v)buzz(30);
+ renderSettings();
+}
+function toggleTilt(){
+ if(settings.tilt){settings.tilt=false;disableTilt();persistSettings();renderSettings();return}
+ enableTilt().then(ok=>{
+  if(!ok){notify("Tilt steering needs motion-sensor permission");return}
+  settings.tilt=true;persistSettings();renderSettings();
+  setTimeout(()=>{if(settings.tilt&&!tilt.ok){settings.tilt=false;disableTilt();persistSettings();renderSettings();notify("No motion sensor detected on this device")}},1800);
+ });
+}
+
+const touch={active:false,x:0,y:0,nitro:false};
+function resetTouch(){touch.active=false;touch.x=0;touch.y=0;touch.nitro=false;const k=document.getElementById("joyKnob"),n=document.getElementById("nitroBtn");if(k)k.style.transform="translate(0px,0px)";if(n)n.classList.remove("active")}
+const canvas=document.getElementById("gameCanvas");
+let ctx=null,R=null; // R = 3D renderer state (null => classic 2D fallback using ctx)
+function currentCar(){return cars[save.selectedCar]||cars.silverado}
+function statsForCar(){const c=currentCar(),u=ups();return{health:c.health+u.armor*25,fuel:c.fuel+u.tank*30,speed:c.speed+u.engine*.35,nitro:100+u.nitro*25}}
+function updateWallet(){document.getElementById("coinCount").textContent=save.coins.toLocaleString()}
+function openScreen(id){gameRunning=false;paused=false;resetTouch();unlockScreen();if(id!=="gameScreen")document.body.classList.remove("mode-explore");document.body.classList.toggle("in-game",id==="gameScreen");{const po=document.getElementById("pauseOverlay");if(po)po.classList.remove("show")}document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");updateWallet();if(id==="shopScreen")renderShop();if(id==="garageScreen")renderGarage();if(id==="settingsScreen")renderSettings();if(id==="accountScreen")renderAccount();if(id==="adminScreen")renderAdmin();if(id==="ownerScreen")renderOwner()}
+function notify(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),1900)}
+function renderShop(){const sl=document.getElementById("shopCarLine");if(sl)sl.textContent="Upgrading: "+currentCar().name+" - upgrades stay on this car only. Equip another car in the Garage to upgrade it.";const root=document.getElementById("upgradeList");root.innerHTML="";for(const [key,u] of Object.entries(upgrades)){const level=ups()[key],price=u.base*(level+1),max=level>=5;const card=document.createElement("div");card.className="shop-card";card.innerHTML=`<div class="item-icon">${u.icon}</div><div class="item-copy"><h3>${u.name}</h3><p>${u.desc}</p><div class="level">LEVEL ${level} / 5</div></div><div><div class="price">${max?"MAX LEVEL":"✦ "+price.toLocaleString()}</div><button class="btn small ${max?"":"gold"}" ${max||save.coins<price?"disabled":""} style="${max||save.coins<price?"opacity:.45;cursor:not-allowed":""}" onclick="buyUpgrade('${key}')">${max?"MAXED": "BUY"}</button></div>`;root.appendChild(card)}}
+function buyUpgrade(key){const u=upgrades[key],level=ups()[key],price=u.base*(level+1);if(level>=5)return;if(save.coins<price){notify("Not enough coins!");return}save.coins-=price;ups()[key]++;persist();updateWallet();renderShop();notify(u.name+" upgraded!")}
+function renderGarage(){const root=document.getElementById("carList");root.innerHTML="";for(const [id,c] of Object.entries(cars)){const owned=save.ownedCars.includes(id),selected=save.selectedCar===id,card=document.createElement("div");card.className="car-card"+(selected?" selected":"");card.innerHTML=`<div class="car-art"><div class="mini-truck" style="--car:${c.color}"></div></div><div class="item-copy"><h3>${c.name}</h3><p>${c.desc}</p></div><div class="statline"><span>♥ ${c.health} hull</span><span>⛽ ${c.fuel} fuel</span><span>⚡ ${c.speed.toFixed(1)} speed</span></div>${upsLine(id,owned)}<div class="car-bottom"><span class="level">${selected?"CURRENT VEHICLE":owned?"OWNED":"LOCKED"}</span><div>${selected?'<button class="btn small" disabled>SELECTED</button>':owned?`<button class="btn small primary" onclick="selectCar('${id}')">EQUIP</button>`:`<button class="btn small gold" ${save.coins<c.price?"disabled style='opacity:.45'":""} onclick="buyCar('${id}')">✦ ${c.price.toLocaleString()}</button>`}</div></div>`;root.appendChild(card)}}
+function buyCar(id){const c=cars[id];if(save.ownedCars.includes(id))return;if(save.coins<c.price){notify("Not enough coins!");return}save.coins-=c.price;save.ownedCars.push(id);save.selectedCar=id;persist();updateWallet();renderGarage();notify(c.name+" unlocked!")}
+function selectCar(id){if(!save.ownedCars.includes(id))return;save.selectedCar=id;persist();renderGarage();notify(cars[id].name+" equipped")}
+function startGame(){mode="mission";lastMode="mission";document.body.classList.remove("mode-explore");setHudLabels(false);setHint();const s=statsForCar();player={x:500,y:480,vx:0,vy:0,health:s.health,maxHealth:s.health,fuel:s.fuel,maxFuel:s.fuel,nitro:s.nitro,maxNitro:s.nitro,angle:-Math.PI/2,invuln:0};world={time:60,score:0,data:0,runCoins:0,particles:[],debris:[],samples:[],roadOffset:0,stormX:730,stormY:210,stormPhase:0,spawn:0,shake:0};for(let i=0;i<10;i++)world.samples.push({x:100+Math.random()*800,y:50+Math.random()*480,r:10,pulse:Math.random()*6});for(let i=0;i<7;i++)world.debris.push(makeDebris());document.getElementById("gameMessage").textContent="Collect 10 research samples and survive.";prepareRun3D();openScreen("gameScreen");gameRunning=true;paused=false;tilt.base=null;tilt.x=0;tilt.y=0;lastFrame=performance.now();const lid=++loopId;requestAnimationFrame(t=>loop(t,lid));lockScreen();if(settings.tilt&&!tilt.listening)enableTilt()}
+function makeDebris(){return{x:70+Math.random()*860,y:35+Math.random()*530,r:9+Math.random()*9,vx:(Math.random()-.5)*1.8,vy:.8+Math.random()*1.7,spin:Math.random()*6}}
+function leaveRun(){if(mode==="explore"&&gameRunning&&ex){finishExplore(false,"You headed back to base with your data.");return}gameRunning=false;openScreen("homeScreen");notify("Run ended. Your saved garage is ready.")}
+function loop(now,id){if(!gameRunning||id!==loopId)return;const dt=Math.min((now-lastFrame)/16.67,2);lastFrame=now;padState=readPad();if(padState){if(padState.start&&!pad.start)togglePause();if(mode==="explore"&&!paused){if(padState.bag&&!pad.bag)toggleBags();if(padState.map&&!pad.map)toggleBigMap()}pad.start=padState.start;pad.bag=padState.bag;pad.map=padState.map}else{pad.start=false;pad.bag=false;pad.map=false}if(!paused){if(mode==="explore")updateEx(dt);else update(dt);if(gameRunning)draw()}requestAnimationFrame(t=>loop(t,id))}
+function update(dt){if(!gameRunning)return;world.time-=dt/60;if(world.time<=0){finishGame(world.data>=10);return}
+ const accel=player.fuel>0?0.22:0.11,handling=0.88;let dx=0,dy=0,mag=1;if(keys.ArrowLeft||keys.a)dx--;if(keys.ArrowRight||keys.d)dx++;if(keys.ArrowUp||keys.w)dy--;if(keys.ArrowDown||keys.s)dy++;
+ if(!dx&&!dy){if(padState&&(padState.x||padState.y)){dx=padState.x;dy=padState.y}else if(touch.active){dx=touch.x;dy=touch.y}else if(settings.tilt&&tilt.ok&&(tilt.x||tilt.y)){dx=tilt.x;dy=tilt.y}if(dx||dy)mag=Math.min(1,Math.hypot(dx,dy))}
+ let boost=((keys[" "]||touch.nitro||(padState&&padState.nitro))&&player.nitro>0&&player.fuel>0);player.boosting=!!boost;let speed=statsForCar().speed*(boost?1.7:1)*Math.max(.4,mag);if(boost){player.nitro=Math.max(0,player.nitro-.85*dt);player.fuel=Math.max(0,player.fuel-.045*dt)}
+ if(dx||dy){const len=Math.hypot(dx,dy);dx/=len;dy/=len;player.vx+=dx*accel*dt;player.vy+=dy*accel*dt;player.angle=Math.atan2(dy,dx)}else{player.vx*=Math.pow(.91,dt);player.vy*=Math.pow(.91,dt)}
+ const v=Math.hypot(player.vx,player.vy);if(v>speed){player.vx=player.vx/v*speed;player.vy=player.vy/v*speed}
+ player.x=Math.max(28,Math.min(972,player.x+player.vx*dt*2.1));player.y=Math.max(28,Math.min(592,player.y+player.vy*dt*2.1));
+ if((dx||dy)&&player.fuel>0)player.fuel=Math.max(0,player.fuel-.012*dt);
+ if(player.invuln>0)player.invuln-=dt;
+ world.stormPhase+=.012*dt;world.stormX=735+Math.sin(world.stormPhase)*75;world.stormY=235+Math.cos(world.stormPhase*.7)*55;
+ world.debris.forEach(d=>{d.x+=d.vx*dt;d.y+=d.vy*dt;d.spin+=.04*dt;if(d.x<20||d.x>980)d.vx*=-1;if(d.y>640){d.y=-20;d.x=40+Math.random()*920}if(dist(player,d)<d.r+17&&player.invuln<=0){const armor=ups().armor;player.health=Math.max(0,player.health-(Math.max(5,13-armor*1.3)));player.invuln=45;player.vx-=d.vx*2;player.vy-=d.vy*2;burst(player.x,player.y,"#ffb16b",10);world.shake=14;buzz(45);if(player.health<=0){finishGame(false);return}}});
+ world.samples.forEach((s,i)=>{if(gameRunning&&s&&dist(player,s)<28){world.samples[i]=null;world.data++;world.runCoins+=50;world.score+=250;burst(s.x,s.y,"#65e9ff",18);buzz(12);document.getElementById("gameMessage").textContent="+50 COINS  •  RESEARCH DATA SECURED";if(world.data>=10){finishGame(true);return}}});
+ world.score+=Math.round((Math.abs(player.vx)+Math.abs(player.vy))*dt*1.5);
+ world.particles=world.particles.filter(p=>p.life>0);world.particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;p.vx*=.98;p.vy*=.98;if(p.vh!==undefined){p.h+=p.vh*dt;p.vh-=.22*dt;if(p.h<2){p.h=2;p.vh*=-.35}}});
+ world.roadOffset=(world.roadOffset+1.5*dt)%80;updateHud();
+}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function burst(x,y,color,n){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=1+Math.random()*4;world.particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:20+Math.random()*20,color,h:14,vh:1+Math.random()*3.5})}}
+function updateHud(){const pct=(v,m)=>Math.max(0,Math.min(100,v/m*100));document.getElementById("dataHud").textContent=world.data+" / 10";document.getElementById("dataBar").style.width=world.data*10+"%";document.getElementById("scoreHud").textContent=Math.floor(world.score).toLocaleString();document.getElementById("fuelHud").textContent=Math.ceil(player.fuel/player.maxFuel*100)+"%";document.getElementById("fuelBar").style.width=pct(player.fuel,player.maxFuel)+"%";document.getElementById("healthHud").textContent=Math.ceil(player.health/player.maxHealth*100)+"%";document.getElementById("healthBar").style.width=pct(player.health,player.maxHealth)+"%";document.getElementById("healthBar").style.background=player.health/player.maxHealth<.3?"var(--red)":"var(--green)";document.getElementById("timeHud").textContent=Math.max(0,Math.ceil(world.time))+"s";document.getElementById("nitroBar").style.width=pct(player.nitro,player.maxNitro)+"%";document.getElementById("nitroBtn").classList.toggle("empty",player.nitro<=0||player.fuel<=0)}
+function finishGame(won){if(!gameRunning)return;gameRunning=false;buzz(won?[40,50,40,50,90]:[120]);const completion=won?500:0,scoreBonus=Math.floor(world.score/100),earned=world.runCoins+completion+scoreBonus;save.coins+=earned;persist();updateWallet();document.getElementById("resultTitle").textContent=won?"MISSION COMPLETE":"MISSION OVER";document.getElementById("resultText").textContent=won?"Outstanding work. Your research package is secured.":"The storm got the better of this run. Repair, upgrade, and head back out.";document.getElementById("rewardText").textContent="+"+earned.toLocaleString()+" COINS";document.getElementById("resultStats").textContent=`${world.data}/10 samples  •  ${Math.floor(world.score).toLocaleString()} score  •  ${won?"+500 completion bonus": "No completion bonus"}  •  +${scoreBonus} score bonus`;openScreen("resultsScreen")}
+function draw2D(){const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);
+ const sky=ctx.createLinearGradient(0,0,0,h);sky.addColorStop(0,"#425b5b");sky.addColorStop(.55,"#304b4d");sky.addColorStop(1,"#243c43");ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+ // rolling fields and subtle terrain texture
+ ctx.fillStyle="#71806b";for(let i=0;i<18;i++){const x=(i*173+world.roadOffset*-.35)%1100-50,y=(i*97)%620;ctx.globalAlpha=.08;ctx.beginPath();ctx.ellipse(x,y,75,22,.2,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
+ // road
+ ctx.fillStyle="#29383d";ctx.fillRect(0,0,w,90);ctx.fillRect(0,530,w,90);ctx.fillStyle="#c1b99a";ctx.fillRect(0,87,w,3);ctx.fillRect(0,530,w,3);ctx.strokeStyle="#b9b5a1";ctx.lineWidth=3;ctx.setLineDash([25,22]);ctx.lineDashOffset=-world.roadOffset;ctx.beginPath();ctx.moveTo(0,45);ctx.lineTo(w,45);ctx.moveTo(0,575);ctx.lineTo(w,575);ctx.stroke();ctx.setLineDash([]);
+ // storm funnel
+ const sx=world.stormX,sy=world.stormY;ctx.save();ctx.translate(sx,sy);ctx.rotate(Math.sin(world.stormPhase)*.08);
+ const glow=ctx.createRadialGradient(0,0,12,0,0,190);glow.addColorStop(0,"#b5cbd033");glow.addColorStop(1,"#b5cbd000");ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,0,190,0,Math.PI*2);ctx.fill();
+ for(let i=0;i<7;i++){ctx.strokeStyle=`rgba(190,205,205,${.17-i*.014})`;ctx.lineWidth=12-i*.8;ctx.beginPath();ctx.ellipse(0,Math.sin(world.stormPhase*2+i)*10,45+i*15,12+i*12,Math.sin(world.stormPhase+i)*.25,0,Math.PI*2);ctx.stroke()}
+ ctx.fillStyle="#26343a";ctx.beginPath();ctx.moveTo(-18,-4);ctx.lineTo(18,-4);ctx.lineTo(75,205);ctx.quadraticCurveTo(0,230,-75,205);ctx.closePath();ctx.fill();ctx.restore();
+ // debris and samples
+ world.debris.forEach(d=>{ctx.save();ctx.translate(d.x,d.y);ctx.rotate(d.spin);ctx.fillStyle="#b58b65";ctx.strokeStyle="#493c32";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-d.r,-d.r*.5);ctx.lineTo(d.r*.7,-d.r);ctx.lineTo(d.r,d.r*.3);ctx.lineTo(-d.r*.4,d.r);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()});
+ world.samples.forEach(s=>{if(!s)return;const pulse=1+Math.sin((performance.now()/220)+s.pulse)*.16;ctx.save();ctx.translate(s.x,s.y);ctx.scale(pulse,pulse);ctx.shadowColor="#5beaff";ctx.shadowBlur=20;ctx.fillStyle="#5beaff";ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle="#e6fdff";ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,14,0,Math.PI*2);ctx.stroke();ctx.restore()});
+ world.particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/35);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
+ drawTruck(player.x,player.y,player.angle,currentCar().color,player.invuln>0);
+ // soft vignette
+ const vg=ctx.createRadialGradient(w/2,h/2,180,w/2,h/2,650);vg.addColorStop(0,"#00000000");vg.addColorStop(1,"#07111c55");ctx.fillStyle=vg;ctx.fillRect(0,0,w,h);
+}
+function drawTruck(x,y,angle,color,blink){ctx.save();ctx.translate(x,y);ctx.rotate(angle);if(blink>0&&Math.floor(blink/5)%2===0)ctx.globalAlpha=.45;
+ ctx.shadowColor="#0009";ctx.shadowBlur=15;ctx.shadowOffsetY=7;ctx.fillStyle="#10171d";roundRect(-23,-15,48,30,7);ctx.fill();ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+ ctx.fillStyle=color;roundRect(-25,-13,49,26,7);ctx.fill();ctx.fillStyle="#263b49";roundRect(-4,-11,17,22,4);ctx.fill();ctx.fillStyle="#9ed9e8";roundRect(-2,-9,12,18,3);ctx.fill();ctx.fillStyle="#e7f4f4";ctx.fillRect(19,-8,4,6);ctx.fillRect(19,2,4,6);ctx.fillStyle="#d65c4c";ctx.fillRect(-24,-8,3,5);ctx.fillRect(-24,3,3,5);
+ ctx.fillStyle="#080d12";ctx.fillRect(-16,-17,10,4);ctx.fillRect(8,-17,10,4);ctx.fillRect(-16,13,10,4);ctx.fillRect(8,13,10,4);ctx.restore()}
+function roundRect(x,y,w,h,r){const c=ctx;c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+/* =====================================================================
+   3D RENDERER (three.js)
+   The game logic above is untouched: the world is still 1000 x 620 units on x / y,
+   mapped here to three.js x / z. If three.js or WebGL is unavailable, draw() falls
+   back to the original 2D renderer (draw2D) so the game always works.
+   ===================================================================== */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+let warned2D=false;
+function draw(){if(R)draw3D();else if(ctx)draw2D()}
+const colorCache={};
+function colorRGB(s){let c=colorCache[s];if(!c){const k=new THREE.Color(s);c=colorCache[s]=[k.r,k.g,k.b]}return c}
+function makeTex(w,h,fn){const c=document.createElement("canvas");c.width=w;c.height=h;fn(c.getContext("2d"),w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
+
+function init3D(){
+ if(typeof THREE==="undefined")return false;
+ let renderer;
+ try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:"high-performance"})}catch(e){console.warn("WebGL unavailable",e);return false}
+ const LOW=isTouchDevice;
+ renderer.setPixelRatio(LOW?1:Math.min(window.devicePixelRatio||1,1.5));
+ renderer.setSize(1000,620,false);
+ renderer.shadowMap.enabled=true;
+ renderer.shadowMap.type=LOW?THREE.PCFShadowMap:THREE.PCFSoftShadowMap;
+ const SKY=0x4a5d5e,scene=new THREE.Scene();
+ scene.background=new THREE.Color(SKY);scene.fog=new THREE.Fog(SKY,950,2300);
+ const camera=new THREE.PerspectiveCamera(50,1000/620,10,4000);
+
+ // ---- lights ----
+ const hemi=new THREE.HemisphereLight(0xbccfd4,0x3d4a36,.95);scene.add(hemi);
+ const sun=new THREE.DirectionalLight(0xe2ecf0,.8);sun.castShadow=true;
+ sun.shadow.mapSize.set(LOW?1024:2048,LOW?1024:2048);
+ const sc=sun.shadow.camera;sc.left=-420;sc.right=420;sc.top=420;sc.bottom=-420;sc.near=10;sc.far=1600;sc.updateProjectionMatrix();
+ sun.shadow.bias=-.0008;
+ scene.add(sun);scene.add(sun.target);
+ const flashLight=new THREE.AmbientLight(0xcfe4ff,0);scene.add(flashLight);
+
+ // ---- shared textures / geometry / materials ----
+ const radial=makeTex(64,64,(g,w,h)=>{const gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,"rgba(255,255,255,1)");gr.addColorStop(.4,"rgba(255,255,255,.5)");gr.addColorStop(1,"rgba(255,255,255,0)");g.fillStyle=gr;g.fillRect(0,0,w,h)});
+ radial.wrapS=radial.wrapT=THREE.ClampToEdgeWrapping;
+ const G={
+  box:new THREE.BoxGeometry(1,1,1),wheel:new THREE.CylinderGeometry(6.8,6.8,5.2,18),hub:new THREE.CylinderGeometry(3.6,3.6,.8,12),
+  tank:new THREE.CylinderGeometry(3.4,3.4,15,12),dish:new THREE.CylinderGeometry(4.6,2.6,1.2,18),flame:new THREE.ConeGeometry(2.6,14,10),
+  beam:new THREE.ConeGeometry(13,60,16,1,true),core:new THREE.IcosahedronGeometry(9,1),ring:new THREE.TorusGeometry(14,1.2,8,28),
+  sbeam:new THREE.CylinderGeometry(2.4,2.4,95,10,1,true),sphere:new THREE.SphereGeometry(1,14,10),cone:new THREE.ConeGeometry(1,1,8),trunk:new THREE.CylinderGeometry(1,1,1,6)
+ };
+ const M={
+  debris:new THREE.MeshLambertMaterial({color:0xb58b65}),
+  flame:new THREE.MeshBasicMaterial({color:0x7fe8ff,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}),
+  beam:new THREE.MeshBasicMaterial({color:0xfff1c4,transparent:true,opacity:.08,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}),
+  sampleCore:new THREE.MeshBasicMaterial({color:0x5beaff}),sampleRing:new THREE.MeshBasicMaterial({color:0xe6fdff}),
+  sampleBeam:new THREE.MeshBasicMaterial({color:0x5beaff,transparent:true,opacity:.22,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}),
+  sampleGlow:new THREE.SpriteMaterial({map:radial,color:0x5beaff,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false})
+ };
+ const Lm=c=>new THREE.MeshLambertMaterial({color:c});
+
+ // ---- ground + roads ----
+ const grassTex=makeTex(256,256,(g,w,h)=>{g.fillStyle="#6a7d5b";g.fillRect(0,0,w,h);for(let i=0;i<520;i++){const l=Math.random();g.fillStyle="rgba("+((60+l*60)|0)+","+((88+l*55)|0)+","+((52+l*32)|0)+",.22)";g.beginPath();g.ellipse(Math.random()*w,Math.random()*h,4+Math.random()*16,2+Math.random()*7,Math.random()*3,0,6.283);g.fill()}});
+ grassTex.repeat.set(16,16);grassTex.anisotropy=4;
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(3400,3400),new THREE.MeshLambertMaterial({map:grassTex}));
+ ground.rotation.x=-Math.PI/2;ground.position.set(500,-.5,310);ground.receiveShadow=true;scene.add(ground);
+
+ const roadTex=makeTex(128,128,(g,w,h)=>{g.fillStyle="#2b393e";g.fillRect(0,0,w,h);for(let i=0;i<380;i++){g.fillStyle=Math.random()<.5?"rgba(255,255,255,.045)":"rgba(0,0,0,.09)";g.fillRect(Math.random()*w,Math.random()*h,2,2)}g.fillStyle="#c1b99a";g.fillRect(0,0,w,5);g.fillRect(0,h-5,w,5);g.fillStyle="#d3cfb8";g.fillRect(0,h/2-2.5,80,5)});
+ roadTex.repeat.set(2600/80,1);
+ const roadMat=new THREE.MeshLambertMaterial({map:roadTex}),roadGeo=new THREE.PlaneGeometry(2600,90);const roadsArr=[];
+ for(const z of [45,575]){const r=new THREE.Mesh(roadGeo,roadMat);r.rotation.x=-Math.PI/2;r.position.set(500,.4,z);r.receiveShadow=true;scene.add(r);roadsArr.push(r)}
+
+ // ---- scenery beyond the playfield (visual only) ----
+ const scenery=new THREE.Group();scene.add(scenery);
+ const mTrunk=Lm(0x4a3a2b),mLeaf=Lm(0x3e5a38),mLeaf2=Lm(0x4c6a3f),mWood=Lm(0x5b4a38),mRed=Lm(0x8e3b34),mWhite=Lm(0xd9d6cc),mRoof=Lm(0x3a3f45),mSilo=Lm(0xaab3b8);
+ const bld=[[140,-140,85],[190,-135,45],[860,-190,65]];
+ for(let i=0;i<46;i++){
+  const x=-700+Math.random()*2500,z=-75-Math.random()*320,s=.8+Math.random()*1.1;
+  if(bld.some(b=>Math.hypot(x-b[0],z-b[1])<b[2]))continue;
+  const t=new THREE.Mesh(G.trunk,mTrunk);t.scale.set(2.2*s,14*s,2.2*s);t.position.set(x,7*s,z);
+  const c=new THREE.Mesh(G.cone,i%2?mLeaf:mLeaf2);c.scale.set(13*s,30*s,13*s);c.position.set(x,29*s,z);
+  scenery.add(t,c);
+ }
+ const wires=[];
+ for(let x=-700;x<=1700;x+=150){
+  const p=new THREE.Mesh(G.box,mWood);p.scale.set(2.4,64,2.4);p.position.set(x,32,-22);scenery.add(p);
+  const a=new THREE.Mesh(G.box,mWood);a.scale.set(2,2,20);a.position.set(x,60,-22);scenery.add(a);
+  if(x<1700)for(const o of [-8,0,8])wires.push(x,60,-22+o,x+150,60,-22+o);
+ }
+ const wireGeo=new THREE.BufferGeometry();wireGeo.setAttribute("position",new THREE.BufferAttribute(new Float32Array(wires),3));
+ scenery.add(new THREE.LineSegments(wireGeo,new THREE.LineBasicMaterial({color:0x1b2226})));
+ function prism(w,d,hh,mat,x,y,z){const sh=new THREE.Shape();sh.moveTo(-d/2-3,0);sh.lineTo(d/2+3,0);sh.lineTo(0,hh);sh.closePath();const g=new THREE.ExtrudeGeometry(sh,{depth:w+4,bevelEnabled:false});g.translate(0,0,-(w+4)/2);g.rotateY(Math.PI/2);const m=new THREE.Mesh(g,mat);m.position.set(x,y,z);scenery.add(m)}
+ {const b=new THREE.Mesh(G.box,mRed);b.scale.set(70,34,46);b.position.set(140,17,-140);scenery.add(b);prism(70,46,24,mRoof,140,34,-140);
+  const s=new THREE.Mesh(new THREE.CylinderGeometry(12,12,70,16),mSilo);s.position.set(190,35,-135);scenery.add(s);
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(12,16,8,0,Math.PI*2,0,Math.PI/2),mRoof);dome.position.set(190,70,-135);scenery.add(dome);
+  const h=new THREE.Mesh(G.box,mWhite);h.scale.set(46,26,34);h.position.set(860,13,-190);scenery.add(h);prism(46,34,16,mRoof,860,26,-190)}
+
+ // ---- storm clouds (a dark ceiling behind the playfield + a wall cloud over the funnel) ----
+ const clouds=new THREE.Group();scene.add(clouds);
+ const cloudMats=[Lm(0x30393f),Lm(0x394349),Lm(0x2b3338)];
+ for(let i=0;i<28;i++){const m=new THREE.Mesh(G.sphere,cloudMats[i%3]),r=70+Math.random()*60;m.scale.set(r*1.4,r*.38,r);m.position.set(-500+Math.random()*2200,235+Math.random()*60,-170+Math.random()*170);clouds.add(m)}
+ const wall=new THREE.Mesh(G.sphere,cloudMats[2]);wall.scale.set(120,40,100);scene.add(wall);
+
+ // ---- tornado funnel ----
+ const FN=14,FH=235;
+ const fr=h=>7+Math.pow(h/FH,1.8)*92;
+ const fxo=(h,t)=>Math.sin(t*.9+h*.02)*12*(h/FH);
+ const fzo=(h,t)=>-Math.pow(h/FH,1.4)*95+Math.sin(t*1.3+h*.03)*7*(h/FH);
+ const funnelTex=makeTex(256,128,(g,w,h)=>{g.fillStyle="rgba(120,130,130,.45)";g.fillRect(0,0,w,h);for(let i=0;i<90;i++){const x=Math.random()*w;g.strokeStyle="rgba("+((190+Math.random()*50)|0)+","+((195+Math.random()*50)|0)+","+((195+Math.random()*45)|0)+","+(.08+Math.random()*.35)+")";g.lineWidth=1+Math.random()*4;g.beginPath();g.moveTo(x,Math.random()*h);g.lineTo(x+(Math.random()-.5)*30,Math.random()*h);g.stroke()}});
+ funnelTex.repeat.set(3,1);
+ const funnelMat=new THREE.MeshBasicMaterial({map:funnelTex,color:0xc4cccc,transparent:true,opacity:.8,side:THREE.DoubleSide,depthWrite:false});
+ const funnelSegs=[];
+ for(let i=0;i<FN;i++){const h0=i*FH/FN,h1=(i+1)*FH/FN,m=new THREE.Mesh(new THREE.CylinderGeometry(fr(h1),fr(h0),(h1-h0)*1.18,20,1,true),funnelMat);m.userData={h:(h0+h1)/2,spin:.1+Math.random()*.06};scene.add(m);funnelSegs.push(m)}
+ const DN=150,dustPos=new Float32Array(DN*3),dustD=[];
+ const dust=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({size:34,map:radial,color:0x7b6f61,transparent:true,opacity:.75,depthWrite:false}));
+ dust.geometry.setAttribute("position",new THREE.BufferAttribute(dustPos,3));dust.frustumCulled=false;scene.add(dust);
+ for(let i=0;i<DN;i++)dustD.push({a:Math.random()*6.283,s:.04+Math.random()*.07,h:Math.random()*FH*.8,k:.9+Math.random()*.7});
+ const baseDust=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:radial,color:0x9a968a,transparent:true,opacity:.6,depthWrite:false}));
+ baseDust.rotation.x=-Math.PI/2;baseDust.scale.set(230,230,1);scene.add(baseDust);
+
+ // ---- rain + lightning ----
+ const RN=LOW?260:520,rainPos=new Float32Array(RN*6),rainD=[];
+ for(let i=0;i<RN;i++)rainD.push({x:-300+Math.random()*1600,y:Math.random()*420,z:-350+Math.random()*1100,v:20+Math.random()*10});
+ const rain=new THREE.LineSegments(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0xb4c8d4,transparent:true,opacity:.32}));
+ rain.geometry.setAttribute("position",new THREE.BufferAttribute(rainPos,3));rain.frustumCulled=false;scene.add(rain);
+ const bolt=new THREE.Line(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0xeaf6ff,fog:false}));
+ bolt.geometry.setAttribute("position",new THREE.BufferAttribute(new Float32Array(12*3),3));bolt.frustumCulled=false;bolt.visible=false;scene.add(bolt);
+
+ // ---- dynamic particle systems (sparks from the game's particles + tire dust / nitro trail) ----
+ function dynPoints(n,size){const geo=new THREE.BufferGeometry(),pos=new THREE.BufferAttribute(new Float32Array(n*3),3),col=new THREE.BufferAttribute(new Float32Array(n*3),3);
+  pos.setUsage(THREE.DynamicDrawUsage);col.setUsage(THREE.DynamicDrawUsage);geo.setAttribute("position",pos);geo.setAttribute("color",col);geo.setDrawRange(0,0);
+  const p=new THREE.Points(geo,new THREE.PointsMaterial({size,map:radial,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));p.frustumCulled=false;scene.add(p);return{p,pos,col,n}}
+ const sparks=dynPoints(400,26),trail=dynPoints(140,44);
+
+ R={renderer,scene,camera,hemi,sun,flashLight,roadTex,clouds,wall,funnelSegs,fr,fxo,fzo,FH,dust,dustPos,dustD,DN,baseDust,rain,rainPos,rainD,RN,bolt,sparks,trail,G,M,radial,LOW,pr0:LOW?1:Math.min(window.devicePixelRatio||1,1.5),fps:60,slow:0,level:0,funnelMat,scenery,ground,roadsArr,
+  t:0,last:performance.now(),flash:0,nextBolt:200,trailList:[],trailAcc:0,trailSide:1,run:null,truck:null,samples:[],debris:[],truckMats:[],lost:false};
+ canvas.addEventListener("webglcontextlost",e=>{e.preventDefault();if(R)R.lost=true});
+ canvas.addEventListener("webglcontextrestored",()=>{if(R)R.lost=false});
+ return true;
+}
+
+function startLevel(){return settings.quality==="low"?2:settings.quality==="high"?0:(isTouchDevice?1:0)}
+/* quality levels: 0 = everything, 1 = no shadows + half the rain, 2 = also lower resolution + a quarter of the rain */
+function applyQuality(level){
+ if(!R)return;R.level=level;R.sun.castShadow=(level===0);
+ R.renderer.setPixelRatio(level>=2?.75:R.pr0);R.renderer.setSize(1000,620,false);
+ R.rain.geometry.setDrawRange(0,Math.floor(R.RN*(level===0?1:level===1?.5:.25))*2);
+}
+function makeSample(){
+ const g=new THREE.Group(),core=new THREE.Mesh(R.G.core,R.M.sampleCore),ring=new THREE.Mesh(R.G.ring,R.M.sampleRing),beam=new THREE.Mesh(R.G.sbeam,R.M.sampleBeam),glow=new THREE.Sprite(R.M.sampleGlow);
+ beam.position.y=47;glow.scale.set(58,58,1);g.add(core,ring,beam,glow);g.userData={core,ring,glow};return g;
+}
+
+/* Builds the player's truck. Shape/size depend on the selected car; the armor, engine and
+   fuel-tank upgrade levels add visible parts (bull bar, side plates, roof rack, grille, plating, stacks, tanks). */
+function buildTruck(carId,hex,up){
+ const G=R.G,STEEL=0x4b5864,DARK=0x1d242a,GLASS=0x7fb5c9;
+ const P=({silverado:{s:[1,1,1],stripe:0x2f3b46},bronco:{s:[.94,1.06,1.03],stripe:0xf2eee0},titan:{s:[1.14,1.2,1.12],stripe:0xffc65c},phantom:{s:[1.02,.8,.97],stripe:0x56d9ee,glow:0x9d8de0}})[carId]||{s:[1,1,1],stripe:0x2f3b46};
+ const cache={},list=[];
+ const mat=(c,basic)=>{const k=(basic?"b":"l")+c;if(!cache[k]){cache[k]=basic?new THREE.MeshBasicMaterial({color:c}):new THREE.MeshLambertMaterial({color:c});list.push(cache[k])}return cache[k]};
+ const group=new THREE.Group(),body=new THREE.Group();body.scale.set(P.s[0],P.s[1],P.s[2]);group.add(body);
+ const add=(w,h,l,c,x,y,z,o)=>{o=o||{};const m=new THREE.Mesh(G.box,mat(c,o.basic));m.scale.set(w,h,l);m.position.set(x,y,z);if(!o.nosh)m.castShadow=true;(o.parent||body).add(m);return m};
+
+ // main body
+ add(50,8,25,hex,0,7.5,0);                 // lower body
+ add(15,5,24,hex,18,14,0);                 // hood
+ add(17,12,24,hex,2,17.5,0);               // cab
+ add(15,1.2,22,hex,2,24.1,0);              // roof
+ add(.8,7.5,19,GLASS,10.7,18.8,0,{nosh:1});// windshield
+ add(11,6,24.6,GLASS,1.5,19.5,0,{nosh:1}); // side windows
+ add(.8,6,19,GLASS,-6.7,19.5,0,{nosh:1});  // rear window
+ add(15.2,.5,5,P.stripe,18,16.7,0,{nosh:1});add(15,.5,5,P.stripe,2,24.8,0,{nosh:1}); // stripes
+ // bed
+ add(22,1.2,24,0x2a3138,-14,12,0);
+ add(22,6,1.4,hex,-14,15,11.3);add(22,6,1.4,hex,-14,15,-11.3);add(1.4,6,24,hex,-24.3,15,0);
+ // bumpers + lights
+ add(3,4,27,DARK,26.5,8,0);add(3,3,26,DARK,-26.5,8,0);
+ add(1,3,5,0xfff3c4,25.6,13.5,8,{basic:1,nosh:1});add(1,3,5,0xfff3c4,25.6,13.5,-8,{basic:1,nosh:1});
+ add(.8,2.6,5,0xff3b30,-25.2,13.5,9,{basic:1,nosh:1});add(.8,2.6,5,0xff3b30,-25.2,13.5,-9,{basic:1,nosh:1});
+ for(const z of [-8,8]){const b=new THREE.Mesh(G.beam,R.M.beam);b.rotation.z=Math.PI/2;b.position.set(55.5,12.5,z);body.add(b)}
+
+ // wheels
+ const wheels=[];
+ for(const q of [[16,13.5],[16,-13.5],[-16,13.5],[-16,-13.5]]){
+  const pv=new THREE.Group();pv.position.set(q[0],6.8,q[1]);
+  const tire=new THREE.Mesh(G.wheel,mat(0x14181c));tire.rotation.x=Math.PI/2;tire.castShadow=true;pv.add(tire);
+  const hub=new THREE.Mesh(G.hub,mat(0x9aa8b4));hub.rotation.x=Math.PI/2;hub.position.z=Math.sign(q[1])*2.7;pv.add(hub);
+  add(7,1.2,.6,DARK,0,0,Math.sign(q[1])*3.2,{parent:pv,nosh:1});
+  body.add(pv);wheels.push(pv);
+ }
+
+ // roof light bar (flashing)
+ add(3,1.4,18,DARK,6,25.4,0,{nosh:1});
+ const mA=new THREE.MeshBasicMaterial({color:0xff2a2a}),mB=new THREE.MeshBasicMaterial({color:0x2a6bff});list.push(mA,mB);
+ const barA=new THREE.Mesh(G.box,mA);barA.scale.set(3.2,1.8,7);barA.position.set(6,26.2,-5);body.add(barA);
+ const barB=new THREE.Mesh(G.box,mB);barB.scale.set(3.2,1.8,7);barB.position.set(6,26.2,5);body.add(barB);
+
+ // research gear: anemometer on the roof, dish in the bed
+ add(.8,3.6,.8,0x9aa8b4,2,26.4,7,{nosh:1});
+ const spinner=new THREE.Group();spinner.position.set(2,28.6,7);body.add(spinner);
+ for(let k=0;k<3;k++){const a=k*2.094,arm=add(5,.6,.6,0xdfe7ee,0,0,0,{parent:spinner,nosh:1});arm.rotation.y=a;add(1.4,1.4,1.4,0xff6b4a,Math.cos(a)*2.6,0,-Math.sin(a)*2.6,{parent:spinner,nosh:1})}
+ add(1,10,1,0x9aa8b4,-21.5,17,0,{nosh:1});
+ const dishPivot=new THREE.Group();dishPivot.position.set(-21.5,22.5,0);body.add(dishPivot);
+ const dish=new THREE.Mesh(G.dish,mat(0xdfe7ee));dish.rotation.z=-Math.PI/2+.5;dish.position.y=2.5;dish.castShadow=true;dishPivot.add(dish);
+
+ // upgrade visuals
+ const tanks=up.tank>=3?2:up.tank>=1?1:0;
+ for(let i=0;i<tanks;i++){const tk=new THREE.Mesh(G.tank,mat(0xb8c2cc));tk.rotation.x=Math.PI/2;tk.position.set(-9-i*6.6,16,0);tk.castShadow=true;body.add(tk)}
+ if(up.engine>=2){add(1.8,9,1.8,0xb8c2cc,-8,28,12,{nosh:1});add(1.8,9,1.8,0xb8c2cc,-8,28,-12,{nosh:1})}
+ if(up.engine>=4)add(6,2.5,10,DARK,18,17.5,0);
+ if(up.armor>=1){add(2,2.2,26,STEEL,28.4,12,0);add(2,8,2,STEEL,27.6,10,9);add(2,8,2,STEEL,27.6,10,-9)}
+ if(up.armor>=2){add(18,6,1.2,STEEL,0,9,12.9);add(18,6,1.2,STEEL,0,9,-12.9)}
+ if(up.armor>=3){add(16,1.2,1.2,STEEL,2,26.4,-10);add(16,1.2,1.2,STEEL,2,26.4,10);add(1.2,1.2,21,STEEL,-5,26.4,0);add(1.2,1.2,21,STEEL,9,26.4,0);for(const x of [-5,9])for(const z of [-10,10])add(1.2,2.4,1.2,STEEL,x,25.2,z,{nosh:1})}
+ if(up.armor>=4){for(const z of [-7,0,7])add(.8,8,1,STEEL,12,19,z,{nosh:1});add(.8,1,20,STEEL,12,23.2,0,{nosh:1})}
+ if(up.armor>=5){add(15.4,1,23,STEEL,18,16.8,0);add(1.2,9,24,STEEL,-26.9,15,0);add(18,7,1.4,0xffc65c,0,9,13.6,{nosh:1});add(18,7,1.4,0xffc65c,0,9,-13.6,{nosh:1})}
+
+ // nitro flames (shown only while boosting)
+ const flames=[];
+ for(const z of [-7.5,7.5]){const f=new THREE.Mesh(G.flame,R.M.flame);f.rotation.z=Math.PI/2;f.position.set(-34,8,z);f.visible=false;body.add(f);flames.push(f)}
+
+ // neon underglow (Phantom X)
+ let glow=null;
+ if(P.glow){glow=new THREE.Mesh(new THREE.PlaneGeometry(56,32),new THREE.MeshBasicMaterial({color:P.glow,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false}));glow.rotation.x=-Math.PI/2;glow.position.y=.9;group.add(glow)}
+
+ return{group,body,wheels,spinner,dishPivot,flames,barA,barB,mA,mB,glow,mats:list,heading:0,roll:0,pitch:0,blink:false};
+}
+
+function prepareRun3D(){
+ if(!R){if(!warned2D){warned2D=true;notify("3D engine unavailable (offline?) - using the classic 2D view")}return}
+ restoreMission3D();
+ if(R.run){R.scene.remove(R.run);R.truckMats.forEach(m=>m.dispose())}
+ const run=new THREE.Group();R.run=run;R.scene.add(run);
+ const T=buildTruck(save.selectedCar,currentCar().color,ups());R.truck=T;R.truckMats=T.mats;
+ T.heading=-player.angle;T.group.position.set(player.x,0,player.y);T.group.rotation.y=T.heading;run.add(T.group);
+ R.samples=world.samples.map(s=>{const m=makeSample();m.position.set(s.x,0,s.y);run.add(m);return m});
+ R.debris=world.debris.map(d=>{const m=new THREE.Mesh(R.G.box,R.M.debris);m.scale.set(d.r*1.7,d.r*.55,d.r*.95);m.castShadow=true;run.add(m);return m});
+ R.trailList=[];R.trailAcc=0;R.last=performance.now();R.t=0;R.flash=0;R.nextBolt=150+Math.random()*250;
+ R.camera.fov=50;R.camera.updateProjectionMatrix();
+}
+
+function draw3D(){
+ if(!R||R.lost||!world||!player||!R.truck)return;
+ const now=performance.now(),raw=now-R.last;let dt=Math.min(raw/16.67,3);R.last=now;if(!(dt>0))dt=1;
+ if(raw>0&&raw<250){R.fps=R.fps*.94+(1000/raw)*.06;if(settings.quality==="auto"&&R.level<2){if(R.fps<40)R.slow++;else R.slow=Math.max(0,R.slow-2);if(R.slow>150){R.slow=0;R.fps=60;applyQuality(R.level+1);notify("Auto-quality: lowered effects to keep it smooth")}}}
+ R.t+=dt/60;const t=R.t;
+
+ R.roadTex.offset.x=-(world.roadOffset/80);
+
+ // ---- player truck ----
+ const T=R.truck,sp=Math.hypot(player.vx,player.vy);
+ let da=-player.angle-T.heading;da=Math.atan2(Math.sin(da),Math.cos(da));T.heading+=da*Math.min(1,.22*dt);
+ T.group.position.set(player.x,0,player.y);T.group.rotation.y=T.heading;
+ T.roll+=(clamp(da*1.2,-.18,.18)-T.roll)*Math.min(1,.15*dt);
+ T.pitch+=((player.boosting?.06:0)-T.pitch)*Math.min(1,.1*dt);
+ T.body.rotation.x=T.roll;T.body.rotation.z=T.pitch;T.body.position.y=Math.sin(t*26)*clamp(sp,0,5)*.1;
+ for(const w of T.wheels)w.rotation.z-=sp*dt*.33;
+ const blink=player.invuln>0&&Math.floor(player.invuln/5)%2===0;
+ if(blink!==T.blink){T.blink=blink;for(const m of T.mats){m.transparent=blink;m.opacity=blink?.45:1;m.needsUpdate=true}}
+ const f=Math.floor(t*7)%2;T.mA.color.setHex(f?0xff2a2a:0x4a1414);T.mB.color.setHex(f?0x14224a:0x2a6bff);
+ T.spinner.rotation.y+=.3*dt;T.dishPivot.rotation.y=Math.sin(t*.8)*.9;
+ const on=!!player.boosting;
+ for(const fl of T.flames){fl.visible=on;if(on){const s=.7+Math.random()*.6;fl.scale.set(s,1+Math.random()*.6,s)}}
+ if(T.glow)T.glow.material.opacity=.4+Math.sin(t*5)*.12;
+
+ // ---- samples + debris ----
+ for(let i=0;i<R.samples.length;i++){
+  const m=R.samples[i],s=world.samples[i];
+  if(!s){m.visible=false;continue}
+  const u=m.userData,pu=1+Math.sin(now/220+s.pulse)*.16,y=20+Math.sin(now/400+s.pulse)*4;
+  m.position.set(s.x,0,s.y);u.core.position.y=y;u.core.scale.set(pu,pu,pu);u.glow.position.y=y;
+  u.ring.position.y=y;u.ring.rotation.set(Math.PI/2+Math.sin(now/500+s.pulse)*.3,0,now/700);
+ }
+ for(let i=0;i<R.debris.length;i++){
+  const d=world.debris[i],m=R.debris[i];
+  m.position.set(d.x,d.r*.55+3+Math.abs(Math.sin(d.spin*1.5))*5,d.y);m.rotation.set(d.spin*.8,d.spin,0);
+ }
+
+ // ---- storm ----
+ const sx=world.stormX,sz=world.stormY;
+ for(const m of R.funnelSegs){const h=m.userData.h;m.position.set(sx+R.fxo(h,t),h,sz+R.fzo(h,t));m.rotation.y+=m.userData.spin*dt;const k=1+Math.sin(t*2+h*.05)*.04;m.scale.set(k,1,k)}
+ R.baseDust.position.set(sx,1.3,sz);R.baseDust.rotation.z+=.01*dt;
+ R.wall.position.set(sx+R.fxo(R.FH,t),R.FH+14,sz+R.fzo(R.FH,t));
+ R.clouds.position.x=Math.sin(t*.05)*40;
+ const dp=R.dustPos;
+ for(let i=0;i<R.DN;i++){const d=R.dustD[i];d.a+=d.s*dt;const rr=R.fr(d.h)*d.k+10,k=i*3;dp[k]=sx+R.fxo(d.h,t)+Math.cos(d.a)*rr;dp[k+1]=d.h+Math.sin(d.a*2)*6;dp[k+2]=sz+R.fzo(d.h,t)+Math.sin(d.a)*rr}
+ R.dust.geometry.attributes.position.needsUpdate=true;
+
+ // ---- rain ----
+ const rp=R.rainPos;
+ for(let i=0;i<R.RN;i++){const d=R.rainD[i];d.y-=d.v*dt;d.x+=2.2*dt;if(d.y<0){d.y=420+Math.random()*80;d.x=-300+Math.random()*1600;d.z=-350+Math.random()*1100}const k=i*6;rp[k]=d.x;rp[k+1]=d.y;rp[k+2]=d.z;rp[k+3]=d.x-2.5;rp[k+4]=d.y+17;rp[k+5]=d.z}
+ R.rain.geometry.attributes.position.needsUpdate=true;
+
+ // ---- lightning ----
+ R.nextBolt-=dt;
+ if(R.nextBolt<=0){
+  R.nextBolt=240+Math.random()*480;R.flash=1;
+  const bx=60+Math.random()*880,bz=-260+Math.random()*130,a=R.bolt.geometry.attributes.position.array;let x=bx;
+  for(let i=0;i<12;i++){a[i*3]=x;a[i*3+1]=235*(1-i/11);a[i*3+2]=bz;x+=(Math.random()-.5)*34}
+  R.bolt.geometry.attributes.position.needsUpdate=true;
+ }
+ R.flash*=Math.pow(.88,dt);if(R.flash<.02)R.flash=0;
+ R.bolt.visible=R.flash>.3;R.flashLight.intensity=R.flash*1.1;
+
+ // ---- sparks (the game's own particles, now with height) ----
+ const sk=R.sparks,pa=sk.pos.array,ca=sk.col.array;let n=0;
+ for(let i=0;i<world.particles.length&&n<sk.n;i++){const p=world.particles[i],k=n*3,c=colorRGB(p.color),a=clamp(p.life/35,0,1);pa[k]=p.x;pa[k+1]=p.h!==undefined?p.h:14;pa[k+2]=p.y;ca[k]=c[0]*a;ca[k+1]=c[1]*a;ca[k+2]=c[2]*a;n++}
+ sk.p.geometry.setDrawRange(0,n);sk.pos.needsUpdate=true;sk.col.needsUpdate=true;
+
+ // ---- tire dust / nitro trail ----
+ if(sp>1.4){
+  R.trailAcc+=dt;
+  while(R.trailAcc>=1.2){R.trailAcc-=1.2;R.trailSide=-R.trailSide;const fx=Math.cos(T.heading),fz=-Math.sin(T.heading);
+   R.trailList.push({x:player.x-fx*24-fz*R.trailSide*9,z:player.y-fz*24+fx*R.trailSide*9,life:1,b:on});if(R.trailList.length>140)R.trailList.shift()}
+ }
+ R.trailList=R.trailList.filter(p=>(p.life-=dt/38)>0);
+ const tr=R.trail,tpa=tr.pos.array,tca=tr.col.array;let m2=0;
+ for(const p of R.trailList){const k=m2*3,a=p.life*.5;tpa[k]=p.x;tpa[k+1]=3+(1-p.life)*10;tpa[k+2]=p.z;tca[k]=(p.b?.25:.62)*a;tca[k+1]=(p.b?.7:.6)*a;tca[k+2]=(p.b?1:.52)*a;m2++}
+ tr.p.geometry.setDrawRange(0,m2);tr.pos.needsUpdate=true;tr.col.needsUpdate=true;
+
+ // ---- camera: fixed 3/4 view of the whole field with a gentle follow, boost FOV and hit shake ----
+ const cam=R.camera,shake=world.shake||0;world.shake=shake>.15?shake*Math.pow(.88,dt):0;
+ const cx=(player.x-500)*.06,cz=(player.y-310)*.05,jx=(Math.random()-.5)*shake*.9,jy=(Math.random()-.5)*shake*.9;
+ cam.position.set(500+cx+jx,763+jy,787+cz);cam.lookAt(500+cx,0,310+cz);
+ const tf=on?55:50;if(Math.abs(cam.fov-tf)>.05){cam.fov+=(tf-cam.fov)*Math.min(1,.12*dt);cam.updateProjectionMatrix()}
+ R.sun.position.set(player.x-260,640,player.y+300);R.sun.target.position.set(player.x,0,player.y);
+
+ R.renderer.render(R.scene,cam);
+}
+
+/* =====================================================================
+   v6: EXPLORE MODE - open world, roaming tornadoes, airbags, wind meter
+   World units: 1 unit = 0.1 m. Logic x/y maps to three.js x/z.
+   ===================================================================== */
+const WORLD=8000,ROADS=[800,2400,4000,5600,7200];
+const EF=[{n:"EF0",peak:68},{n:"EF1",peak:98},{n:"EF2",peak:128},{n:"EF3",peak:158},{n:"EF4",peak:190},{n:"EF5",peak:225}];
+const THR_FREE=80,THR_BAG=170,GRAV=260,MAXTOR=1,KPH=1.609;
+let mode="mission",lastMode="mission",ex=null,EXW=null,mmBig=false;
+const HINT_DESK=document.getElementById("controlsHint").innerHTML;
+const fmtWind=m=>Math.round(settings.units==="kph"?m*KPH:m);
+const unitW=()=>settings.units==="kph"?"km/h":"mph";
+function fmtDist(u){const m=u*.1;if(settings.units==="kph")return m>=1000?(m/1000).toFixed(1)+" km":Math.round(m)+" m";const ft=m*3.281;return ft>=1000?(ft/5280).toFixed(1)+" mi":Math.round(ft)+" ft"}
+function fmtAlt(u){const m=u*.1;return settings.units==="kph"?Math.round(m)+" m":Math.round(m*3.281)+" ft"}
+function efOfWind(w){return w<40?"BREEZY":w<73?"GUSTY":w<86?"EF0":w<111?"EF1":w<136?"EF2":w<166?"EF3":w<200?"EF4":"EF5"}
+function seeded(seed){return()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296)}
+function nearRoad(x,y,m){for(const c of ROADS){if(Math.abs(x-c)<m||Math.abs(y-c)<m)return true}return false}
+function exMsg(t){const el=document.getElementById("gameMessage");if(el)el.textContent=t}
+function setHint(){
+ const h=document.getElementById("controlsHint");if(!h)return;
+ if(mode==="explore")h.innerHTML=isTouchDevice?"<b>Stick</b>: up = gas, sideways = steer &bull; tap <b>AIRBAGS</b> before the wind lifts you &bull; drag the view to turn the camera":"<span class='key'>W</span><span class='key'>A</span><span class='key'>S</span><span class='key'>D</span> drive &nbsp; <span class='key'>E</span> airbags &nbsp; <span class='key'>SPACE</span> nitro &nbsp; <span class='key'>M</span> map &nbsp; <span class='key'>Q</span><span class='key'>R</span> / drag: camera &nbsp; <span class='key'>P</span> pause";
+ else if(isTouchDevice)applySettings();else h.innerHTML=HINT_DESK;
+}
+function setHudLabels(explore){
+ const L=document.querySelectorAll(".hud-label"),t=explore?["STORM DATA","NEAREST STORM","FUEL","HULL","ALTITUDE"]:["RESEARCH DATA","SCORE","FUEL","HULL","TIME LEFT"];
+ t.forEach((x,i)=>{if(L[i])L[i].textContent=x});const gt=document.getElementById("gameTitle");if(gt)gt.textContent=explore?"STORM EXPLORATION":"TORNADO INTERCEPT MISSION";
+}
+
+/* ---- static world layout (trees, farms, obstacles), same every run ---- */
+function genWorld(){
+ const r=seeded(20261118),trees=[],farms=[],obs=[];
+ for(let g=0;g<46;g++){
+  const gx=300+r()*(WORLD-600),gy=300+r()*(WORLD-600);
+  for(let i=0;i<16;i++){const a=r()*6.283,d=Math.sqrt(r())*190,x=gx+Math.cos(a)*d,y=gy+Math.sin(a)*d,s=.8+r()*1.2;
+   if(x<150||y<150||x>WORLD-150||y>WORLD-150||nearRoad(x,y,60))continue;const ob=[x,y,5*s,0,0];obs.push(ob);trees.push([x,y,s,ob,0])}
+ }
+ for(let f=0;f<18;f++){
+  let x,y,k=0;do{x=400+r()*(WORLD-800);y=400+r()*(WORLD-800);k++}while(nearRoad(x,y,200)&&k<40);
+  const rot=r()*6.283,c=Math.cos(rot),s=Math.sin(rot),P=(lx,lz,rad)=>(()=>{const ob=[x+lx*c+lz*s,y-lx*s+lz*c,rad,1,0];obs.push(ob);return ob})();
+  farms.push({x,y,rot,i:f,dead:false,obs:[P(0,0,46),P(70,8,15),P(-80,12,32)]});
+ }
+ return{trees,farms,obs};
+}
+
+/* ---- tornadoes + wind field ---- */
+function windAt(x,y){
+ let w=0,t=null,d=1e9;
+ for(const o of ex.tors){const dd=Math.hypot(x-o.x,y-o.y),Rc=40*o.sc,Rw=260*o.sc,pk=o.peak*o.fade,v=dd<Rc?pk:pk*Math.exp(-Math.pow((dd-Rc)/Rw,1.4));if(v>w)w=v;if(dd<d){d=dd;t=o}}
+ return{w,t,d};
+}
+
+/* ---- input: steer + throttle from keyboard / controller / touch stick / tilt ---- */
+function exInput(){
+ let steer=0,thr=0;
+ if(keys.ArrowLeft||keys.a)steer--;if(keys.ArrowRight||keys.d)steer++;if(keys.ArrowUp||keys.w)thr++;if(keys.ArrowDown||keys.s)thr--;
+ if(!steer&&!thr){
+  if(padState&&(padState.x||padState.y)){steer=padState.x;thr=-padState.y}
+  else if(touch.active){steer=touch.x;thr=-touch.y}
+  else if(settings.tilt&&tilt.ok&&(tilt.x||tilt.y)){steer=tilt.x;thr=-tilt.y}
+ }
+ return{steer:clamp(steer,-1,1),thr:clamp(thr,-1,1)};
+}
+function hurtEx(n){ex.hull=Math.max(0,ex.hull-n)}
+function toggleBags(){
+ if(mode!=="explore"||!gameRunning||paused||!ex)return;
+ ex.bags=!ex.bags;buzz(25);
+ exMsg(ex.bags?"Airbags on - the car drops to the ground (slower, but the wind can't lift it)":"Airbags off - full speed again, but strong wind can lift you");
+}
+function toggleBigMap(){mmBig=!mmBig}
+
+/* ---- main explore update (df = frames at 60fps) ---- */
+function updateEx(df){
+ const E=ex,dt=df/60,st=statsForCar();E.time+=dt;E.cool-=dt;E.camYaw+=((keys.r?1:0)-(keys.q?1:0))*1.8*dt;if(padState&&(padState.cx||padState.cy)){E.camYaw+=padState.cx*2*dt;E.camPitch=clamp(E.camPitch+padState.cy*dt,-.6,1)}
+ // one tornado at a time: when it dies, a new small one forms after a short pause
+ if(!E.tors.length){E.spawnT-=dt;if(E.spawnT<=0){spawnTornado();E.spawnT=8}}
+ for(const o of E.tors)growTornado(o,dt);
+ {const n0=E.tors.length;E.tors=E.tors.filter(o=>o.age<o.life);if(n0&&!E.tors.length){E.spawnT=6+Math.random()*6;exMsg("The tornado dissipated... another storm is forming.")}}
+ // wind at the truck
+ const wa=windAt(E.x,E.y);E.near=wa.t;E.nearD=wa.t?wa.d:1e9;
+ const amb=9+5*Math.sin(E.time*.35)+(wa.t?24*Math.max(0,1-wa.d/2400):0);
+ E.wind=Math.max(amb,wa.w+amb*.25);E.peak=Math.max(E.peak,E.wind);
+ // airbags: inflate / deflate, then the lift threshold depends on whether they're out
+ E.bagT=clamp(E.bagT+(E.bags?1:-1)*dt*2.2,0,1);
+ const down=E.bagT>=.85,thr=down?THR_BAG:THR_FREE,lifting=wa.w>thr;
+ if(lifting&&!E.wasLift)exMsg(down?"EXTREME WINDS are lifting even your airbags!":"LIFTED! Deploy airbags (E) to cushion the fall.");
+ E.wasLift=lifting;
+ if(!lifting&&!down&&E.z<=0&&wa.w>thr*.8&&E.cool<=0){exMsg("DANGER: wind is near lift strength - deploy airbags (E)!");E.cool=4}
+ // vertical motion
+ if(lifting)E.vz+=GRAV*(1.15+1.6*(wa.w-thr)/thr)*dt;
+ if(E.z>0||E.vz>0||lifting){
+  E.vz-=GRAV*dt;E.z+=E.vz*dt;
+  if(E.z>1100){E.z=1100;E.vz=Math.min(E.vz,0)}
+  if(E.z<=0){
+   const imp=-E.vz;E.z=0;E.vz=0;
+   if(imp>90){hurtEx((imp-90)*.13*(down?.4:1));E.shake=18;buzz(70);exMsg(down?"Airbags cushioned the landing!":"Hard landing! Deploy airbags before you drop.")}
+   E.sp=clamp(E.vx*Math.cos(E.h)+E.vy*Math.sin(E.h),-300,300)*.5;
+  }
+ }
+ if(E.z>0){
+  // airborne: swirl around the funnel, no steering
+  if(wa.t&&wa.w>thr*.7){const dx=E.x-wa.t.x,dy=E.y-wa.t.y,d=Math.max(30,Math.hypot(dx,dy)),k=wa.w*2.6;E.vx+=((-dy/d)*.85-(dx/d)*.4)*k*dt;E.vy+=((dx/d)*.85-(dy/d)*.4)*k*dt}
+  const dm=Math.pow(.5,dt);E.vx*=dm;E.vy*=dm;const vm=Math.hypot(E.vx,E.vy);if(vm>650){E.vx*=650/vm;E.vy*=650/vm}
+  E.x=clamp(E.x+E.vx*dt,60,WORLD-60);E.y=clamp(E.y+E.vy*dt,60,WORLD-60);
+  E.spinY+=(3+wa.w*.05)*dt;E.tumX=Math.sin(E.time*2.3)*(.3+wa.w*.003);E.tumZ=Math.cos(E.time*1.7)*(.4+wa.w*.003);E.boosting=false;
+ }else{
+  // grounded driving (vehicle-relative: gas / brake + steer)
+  const k=Math.pow(.02,dt);E.spinY*=k;E.tumX*=k;E.tumZ*=k;
+  const inp=exInput(),fuelOK=E.fuel>0,cap=st.speed*72*(down?.4:1)*(fuelOK?1:.25);
+  const boost=!down&&fuelOK&&E.nitro>0&&(keys[" "]||touch.nitro||(padState&&padState.nitro));
+  if(boost){E.nitro=Math.max(0,E.nitro-22*dt);E.fuel=Math.max(0,E.fuel-.8*dt)}else E.nitro=Math.min(E.maxNitro,E.nitro+3*dt);
+  E.boosting=!!boost;
+  const maxF=cap*(boost?1.6:1),acc=(down?170:270)*(boost?1.7:1),target=inp.thr*maxF*(inp.thr<0?.45:1);
+  const rate=inp.thr===0?150:(Math.sign(target)===Math.sign(E.sp)||Math.abs(E.sp)<5?acc:acc*1.6);
+  E.sp+=clamp(target-E.sp,-rate*dt,rate*dt);
+  const turn=(2.1-1.0*Math.min(1,Math.abs(E.sp)/(maxF||1)))*(down?.75:1)*Math.min(1,Math.abs(E.sp)/50);
+  E.h+=inp.steer*turn*dt*(E.sp<0?-1:1);E.steerVis=inp.steer;
+  E.vx=Math.cos(E.h)*E.sp;E.vy=Math.sin(E.h)*E.sp;
+  E.x=clamp(E.x+E.vx*dt,60,WORLD-60);E.y=clamp(E.y+E.vy*dt,60,WORLD-60);
+  E.fuel=Math.max(0,E.fuel-(.04+.22*Math.abs(E.sp)/(cap||1))*dt);
+  for(const o of EXW.obs){if(o[4])continue;
+   const dx=E.x-o[0],dy=E.y-o[1],rr=o[2]+16;
+   if(dx*dx+dy*dy<rr*rr){const d=Math.max(1,Math.hypot(dx,dy));E.x=o[0]+dx/d*rr;E.y=o[1]+dy/d*rr;
+    if(Math.abs(E.sp)>120){hurtEx(Math.abs(E.sp)*.025*(down?.5:1)*(o[3]?1:.35));E.shake=10;buzz(30)}E.sp*=.35}
+  }
+ }
+ // wind damage and research data (data only counts while airbags are out and you're on the ground)
+ if(down&&wa.w>110)hurtEx((wa.w-110)*.12*dt);else if(!down&&wa.w>60)hurtEx((wa.w-60)*.03*dt);
+ if(down&&E.z<=0&&wa.t&&wa.w>=55)E.data+=(wa.w/50)*(1+wa.t.ef*.4)*dt;
+ if(E.shake>0)E.shake=E.shake>.2?E.shake*Math.pow(.88,df):0;
+ if(E.hull<=0){finishExplore(true);return}
+ if(E.fuel<=0&&Math.abs(E.sp)<8&&E.z<=0){E.dry+=dt;if(E.dry>6){finishExplore(false,"Out of fuel - you were towed back to base.");return}}else E.dry=0;
+ updateHudEx();
+}
+
+function updateHudEx(){
+ const E=ex,pct=(v,m)=>Math.max(0,Math.min(100,v/m*100)),$=id=>document.getElementById(id);
+ $("dataHud").textContent=Math.floor(E.data)+" pts";$("dataBar").style.width=(E.data%100)+"%";
+ $("scoreHud").textContent=E.near?fmtDist(E.nearD)+" · "+EF[E.near.ef].n:"None";
+ $("fuelHud").textContent=Math.ceil(E.fuel/E.maxFuel*100)+"%";$("fuelBar").style.width=pct(E.fuel,E.maxFuel)+"%";
+ $("healthHud").textContent=Math.ceil(E.hull/E.maxHull*100)+"%";$("healthBar").style.width=pct(E.hull,E.maxHull)+"%";
+ $("healthBar").style.background=E.hull/E.maxHull<.3?"var(--red)":"var(--green)";
+ $("timeHud").textContent=fmtAlt(E.z);
+ $("nitroBar").style.width=pct(E.nitro,E.maxNitro)+"%";$("nitroBtn").classList.toggle("empty",E.nitro<=0||E.fuel<=0||E.bagT>.2);
+ $("bagBtn").classList.toggle("on",E.bags);$("bagBtnDesk").classList.toggle("on",E.bags);
+ $("exSpeed").textContent=fmtWind(Math.abs(E.sp)*.2237)+" "+unitW();
+}
+
+function startExplore(){
+ if(!R){notify("Explore mode needs 3D graphics (WebGL). Try another browser or check your connection.");return}
+ const st=statsForCar();EXW=genWorld();
+ mode="explore";lastMode="explore";
+ ex={x:4000,y:4000,z:0,vz:0,vx:0,vy:0,h:0,camH:0,sp:0,hull:st.health,maxHull:st.health,fuel:st.fuel,maxFuel:st.fuel,nitro:st.nitro,maxNitro:st.nitro,bags:false,bagT:0,spinY:0,tumX:0,tumZ:0,steerVis:0,boosting:false,wind:10,peak:0,near:null,nearD:1e9,tors:[],stormCount:0,spawnT:8,time:0,data:0,shake:0,dry:0,cool:0,wasLift:false,camYaw:0,camPitch:0,camZoom:1};
+ spawnTornado(1);ex.h=ex.camH=Math.atan2(ex.tors[0].y-ex.y,ex.tors[0].x-ex.x);
+ setHudLabels(true);setHint();mmBig=false;
+ prepareExplore3D();openScreen("gameScreen");document.body.classList.add("mode-explore");
+ exMsg("Drive toward the storm. Deploy airbags (E) before the wind gets strong enough to lift you!");
+ gameRunning=true;paused=false;tilt.base=null;tilt.x=0;tilt.y=0;lastFrame=performance.now();
+ const lid=++loopId;requestAnimationFrame(t=>loop(t,lid));lockScreen();if(settings.tilt&&!tilt.listening)enableTilt();
+ updateHudEx();
+}
+function replayRun(){if(lastMode==="explore")startExplore();else startGame()}
+function finishExplore(died,note){
+ if(!gameRunning||!ex)return;gameRunning=false;buzz(died?[140]:[40,40,40]);
+ const E=ex,base=Math.floor(E.data*3),earned=died?Math.floor(base*.6):base;
+ save.coins+=earned;persist();updateWallet();
+ document.getElementById("resultTitle").textContent=died?"VEHICLE LOST":"BACK AT BASE";
+ document.getElementById("resultText").textContent=note||(died?"The storm won this round. Some of your data was lost with the truck.":"Nice work out there.");
+ document.getElementById("rewardText").textContent="+"+earned.toLocaleString()+" COINS";
+ document.getElementById("resultStats").textContent=Math.floor(E.data)+" data pts  •  peak wind "+fmtWind(E.peak)+" "+unitW()+"  •  "+E.stormCount+" storms  •  "+Math.floor(E.time)+"s out"+(died?"  •  data payout reduced 40%":"");
+ openScreen("resultsScreen");
+}
+
+/* ---------------- Explore 3D: world, tornado visuals, chase camera ---------------- */
+const LM=c=>new THREE.MeshLambertMaterial({color:c});
+let exCloudMat=null;
+function setMissionVisible(v){
+ if(!R)return;
+ R.roadsArr.forEach(m=>m.visible=v);R.scenery.visible=v;R.funnelSegs.forEach(m=>m.visible=v);
+ R.wall.visible=v;R.dust.visible=v;R.baseDust.visible=v;R.clouds.visible=v;
+}
+function restoreMission3D(){
+ if(!R)return;setMissionVisible(true);if(R.exw)R.exw.visible=false;
+ const sc=R.scene;sc.fog.color.set(0x4a5d5e);sc.fog.near=950;sc.fog.far=2300;sc.background.set(0x4a5d5e);
+ R.camera.far=4000;R.camera.fov=50;R.camera.updateProjectionMatrix();
+ R.ground.scale.set(1,1,1);R.ground.position.set(500,-.5,310);R.ground.material.map.repeat.set(16,16);
+ R.rain.position.set(0,0,0);R.rain.material.opacity=.32;
+}
+
+function makeFunnelVis(){
+ const g=new THREE.Group(),FN=12,H=R.FH,segs=[];
+ for(let i=0;i<FN;i++){const h0=i*H/FN,h1=(i+1)*H/FN,m=new THREE.Mesh(new THREE.CylinderGeometry(R.fr(h1),R.fr(h0),(h1-h0)*1.18,18,1,true),R.funnelMat);m.userData={h:(h0+h1)/2,spin:.1+Math.random()*.06};g.add(m);segs.push(m)}
+ const wall=new THREE.Mesh(R.G.sphere,exCloudMat);wall.scale.set(120,40,100);g.add(wall);
+ const mass=new THREE.Mesh(R.G.sphere,exCloudMat);mass.scale.set(720,110,720);mass.position.y=H+95;g.add(mass);
+ const bd=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:R.radial,color:0x9a968a,transparent:true,opacity:.6,depthWrite:false}));
+ bd.rotation.x=-Math.PI/2;bd.scale.set(230,230,1);bd.position.y=1.3;g.add(bd);
+ const db=[];for(let i=0;i<16;i++){const m=new THREE.Mesh(R.G.box,R.M.debris);m.scale.set(6+Math.random()*10,3+Math.random()*4,5+Math.random()*7);g.add(m);db.push({m,a:Math.random()*6.283,h:Math.random()*H*.8,s:.05+Math.random()*.06,k:.9+Math.random()*.6})}
+ const DN=60,dustPos=new Float32Array(DN*3),dustD=[],geo=new THREE.BufferGeometry();geo.setAttribute("position",new THREE.BufferAttribute(dustPos,3));
+ const dust=new THREE.Points(geo,new THREE.PointsMaterial({size:34,map:R.radial,color:0x7b6f61,transparent:true,opacity:.75,depthWrite:false}));dust.frustumCulled=false;g.add(dust);
+ for(let i=0;i<DN;i++)dustD.push({a:Math.random()*6.283,s:.04+Math.random()*.07,h:Math.random()*H*.8,k:.9+Math.random()*.7});
+ g.visible=false;R.exw.add(g);
+ return{g,segs,wall,db,dust,dustPos,dustD,DN};
+}
+function updFunnelVis(v,o,t,dt){
+ v.g.visible=true;v.g.position.set(o.x,0,o.y);v.g.scale.setScalar(o.sc*(.2+.8*o.fade));
+ for(const m of v.segs){const h=m.userData.h;m.position.set(R.fxo(h,t),h,R.fzo(h,t));m.rotation.y+=m.userData.spin*dt}
+ v.wall.position.set(R.fxo(R.FH,t),R.FH+14,R.fzo(R.FH,t));
+ const nd=Math.min(v.db.length,3+Math.floor(o.eaten*.6));let di=0;for(const d of v.db){d.m.visible=(di++)<nd;d.a+=d.s*dt;const rr=R.fr(d.h)*d.k+8;d.m.position.set(R.fxo(d.h,t)+Math.cos(d.a)*rr,d.h,R.fzo(d.h,t)+Math.sin(d.a)*rr);d.m.rotation.set(d.a*2,d.a*3,0)}
+ const p=v.dustPos;for(let i=0;i<v.DN;i++){const d=v.dustD[i];d.a+=d.s*dt;const rr=R.fr(d.h)*d.k+10,k=i*3;p[k]=R.fxo(d.h,t)+Math.cos(d.a)*rr;p[k+1]=d.h+Math.sin(d.a*2)*6;p[k+2]=R.fzo(d.h,t)+Math.sin(d.a)*rr}
+ v.dust.geometry.attributes.position.needsUpdate=true;v.dust.material.size=34*o.sc;
+}
+
+function buildExploreWorld(){
+ if(R.exw)return;
+ const g=new THREE.Group();R.exw=g;R.scene.add(g);const W=EXW;
+ exCloudMat=LM(0x2b3338);
+ // sky dome (follows the camera)
+ const skyTex=makeTex(8,256,(c,w,h)=>{const gr=c.createLinearGradient(0,0,0,h);gr.addColorStop(0,"#171f23");gr.addColorStop(.4,"#34454a");gr.addColorStop(.5,"#6f8486");gr.addColorStop(.56,"#5b6e70");gr.addColorStop(1,"#5b6e70");c.fillStyle=gr;c.fillRect(0,0,w,h)});
+ skyTex.wrapS=skyTex.wrapT=THREE.ClampToEdgeWrapping;
+ const sky=new THREE.Mesh(new THREE.SphereGeometry(7000,24,14),new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,fog:false,depthWrite:false}));sky.renderOrder=-10;sky.frustumCulled=false;g.add(sky);R.sky=sky;
+ // road grid
+ const rt=R.roadTex.clone();rt.needsUpdate=true;rt.repeat.set(WORLD/80,1);
+ const rmat=new THREE.MeshLambertMaterial({map:rt}),rgeo=new THREE.PlaneGeometry(WORLD,56);
+ for(const c of ROADS){
+  const a=new THREE.Mesh(rgeo,rmat);a.rotation.x=-Math.PI/2;a.position.set(WORLD/2,.5,c);a.receiveShadow=true;g.add(a);
+  const b=new THREE.Mesh(rgeo,rmat);b.rotation.x=-Math.PI/2;b.rotation.z=Math.PI/2;b.position.set(c,.55,WORLD/2);b.receiveShadow=true;g.add(b);
+ }
+ // trees (instanced)
+ const n=W.trees.length,tr=new THREE.InstancedMesh(R.G.trunk,LM(0x4a3a2b),n),fo=new THREE.InstancedMesh(R.G.cone,LM(0xffffff),n),dm=new THREE.Object3D(),c1=new THREE.Color(0x3e5a38),c2=new THREE.Color(0x4c6a3f);
+ R.treeDm=dm;R.treeCol=[c1,c2];
+ tr.castShadow=true;fo.castShadow=true;tr.frustumCulled=false;fo.frustumCulled=false;g.add(tr,fo);R.exTrunk=tr;R.exFoliage=fo;R.farmVis=[];
+ // farms
+ const roof4=new THREE.ConeGeometry(.7071,1,4),silo=new THREE.CylinderGeometry(12,12,70,14),dome=new THREE.SphereGeometry(12,14,8,0,Math.PI*2,0,Math.PI/2);
+ const mRed=LM(0x8e3b34),mDark=LM(0x3a3f45),mSilo=LM(0xaab3b8),mWhite=LM(0xd9d6cc);
+ const part=(geo,mat,sx,sy,sz,x,y,z,ry,p)=>{const m=new THREE.Mesh(geo,mat);m.scale.set(sx,sy,sz);m.position.set(x,y,z);if(ry)m.rotation.y=ry;m.castShadow=true;p.add(m);return m};
+ for(const f of W.farms){
+  const fg=new THREE.Group();fg.position.set(f.x,0,f.y);fg.rotation.y=f.rot;
+  part(R.G.box,mRed,70,34,46,0,17,0,0,fg);part(roof4,mDark,76,20,52,0,44,0,Math.PI/4,fg);
+  part(silo,mSilo,1,1,1,70,35,8,0,fg);part(dome,mDark,1,1,1,70,70,8,0,fg);
+  part(R.G.box,mWhite,46,26,34,-80,13,12,0,fg);part(roof4,mDark,52,18,40,-80,35,12,Math.PI/4,fg);
+  g.add(fg);R.farmVis.push(fg);
+ }
+ // distant mountains
+ const mg=new THREE.ConeGeometry(1,1,7),mm=LM(0x2b3a44),rr=seeded(77);
+ for(let i=0;i<30;i++){const a=i/30*6.283,h=500+rr()*700,m=new THREE.Mesh(mg,mm);m.scale.set(900+rr()*500,h,900+rr()*500);m.position.set(WORLD/2+Math.cos(a)*6300,h/2-20,WORLD/2+Math.sin(a)*6300);g.add(m)}
+ // storm cloud deck that follows the player
+ const cl=new THREE.Group();g.add(cl);R.exClouds=cl;const cm=[LM(0x30393f),LM(0x394349),LM(0x2b3338)],rc=seeded(5);
+ for(let i=0;i<30;i++){const m=new THREE.Mesh(R.G.sphere,cm[i%3]),r=160+rc()*160;m.scale.set(r*1.5,r*.3,r);m.position.set((rc()-.5)*7000,950+rc()*180,(rc()-.5)*7000);cl.add(m)}
+ // tornado visual pool
+ R.tv=[];for(let i=0;i<MAXTOR;i++)R.tv.push(makeFunnelVis());
+}
+
+function prepareExplore3D(){
+ buildExploreWorld();syncExploreWorld();setMissionVisible(false);R.exw.visible=true;
+ const sc=R.scene;sc.fog.color.set(0x5b6e70);sc.fog.near=2200;sc.fog.far=7500;sc.background.set(0x5b6e70);
+ R.camera.far=12000;R.camera.fov=66;R.camera.updateProjectionMatrix();
+ R.ground.scale.set(6,6,1);R.ground.position.set(WORLD/2,-.5,WORLD/2);R.ground.material.map.repeat.set(96,96);
+ R.rain.material.opacity=.15;R.sparks.p.geometry.setDrawRange(0,0);R.trail.p.geometry.setDrawRange(0,0);
+ if(R.run){R.scene.remove(R.run);R.truckMats.forEach(m=>m.dispose())}
+ const run=new THREE.Group();R.run=run;R.scene.add(run);
+ const T=buildTruck(save.selectedCar,currentCar().color,ups());R.truck=T;R.truckMats=T.mats;T.group.rotation.order="YXZ";run.add(T.group);
+ T.bags=[];
+ R.samples=[];R.debris=[];R.last=performance.now();R.t=0;R.flash=0;R.nextBolt=200+Math.random()*200;R.slow=0;
+}
+
+function drawEx3D(){
+ const E=ex;if(!R||R.lost||!E||!R.truck||!R.tv)return;
+ const now=performance.now(),raw=now-R.last;let dt=Math.min(raw/16.67,3);R.last=now;if(!(dt>0))dt=1;
+ if(raw>0&&raw<250){R.fps=R.fps*.94+(1000/raw)*.06;if(settings.quality==="auto"&&R.level<2){if(R.fps<40)R.slow++;else R.slow=Math.max(0,R.slow-2);if(R.slow>150){R.slow=0;R.fps=60;applyQuality(R.level+1);notify("Auto-quality: lowered effects to keep it smooth")}}}
+ R.t+=dt/60;const t=R.t;
+
+ // truck
+ const T=R.truck,sp=Math.abs(E.sp),inAir=E.z>2;
+ T.group.position.set(E.x,E.z,E.y);T.group.rotation.set(E.tumX,-E.h+E.spinY,E.tumZ);
+ T.roll+=(clamp(-E.steerVis*clamp(sp/250,0,1)*.16,-.18,.18)-T.roll)*Math.min(1,.15*dt);
+ T.pitch+=((E.boosting?.06:0)-T.pitch)*Math.min(1,.1*dt);
+ T.body.rotation.x=T.roll;T.body.rotation.z=T.pitch;const bk=E.bagT*E.bagT*(3-2*E.bagT),low=3.3*bk;T.body.position.y=-low+(inAir?0:Math.sin(t*26)*clamp(sp/60,0,5)*.1);
+ for(const w of T.wheels){w.rotation.z-=(inAir?E.wind*.01:E.sp*.00245)*dt;w.position.y=6.8+low/T.body.scale.y}
+ const f=Math.floor(t*7)%2;T.mA.color.setHex(f?0xff2a2a:0x4a1414);T.mB.color.setHex(f?0x14224a:0x2a6bff);
+ T.spinner.rotation.y+=(.3+E.wind*.004)*dt;T.dishPivot.rotation.y=Math.sin(t*.8)*.9;
+ for(const fl of T.flames){fl.visible=E.boosting;if(E.boosting){const s=.7+Math.random()*.6;fl.scale.set(s,1+Math.random()*.6,s)}}
+ if(T.glow)T.glow.material.opacity=.4+Math.sin(t*5)*.12;
+
+ // tornadoes
+ for(let i=0;i<R.tv.length;i++){const v=R.tv[i],o=E.tors[i];if(o)updFunnelVis(v,o,t,dt);else v.g.visible=false}
+ const near=E.near,prox=near?clamp(1-E.nearD/2500,0,1):0;
+
+ // rain + lightning
+ const rp=R.rainPos;
+ for(let i=0;i<R.RN;i++){const d=R.rainD[i];d.y-=d.v*dt;d.x+=2.2*dt;if(d.y<0){d.y=420+Math.random()*80;d.x=-300+Math.random()*1600;d.z=-350+Math.random()*1100}const k=i*6;rp[k]=d.x;rp[k+1]=d.y;rp[k+2]=d.z;rp[k+3]=d.x-2.5;rp[k+4]=d.y+17;rp[k+5]=d.z}
+ R.rain.geometry.attributes.position.needsUpdate=true;R.rain.position.set(E.x-500,0,E.y-200);R.rain.material.opacity=.1+.3*prox;
+ R.nextBolt-=dt;
+ if(R.nextBolt<=0){
+  R.nextBolt=(prox>0?160:420)+Math.random()*380;R.flash=1;
+  const a=R.bolt.geometry.attributes.position.array,top=near?near.sc*320:700,bx=(near?near.x:E.x)+(Math.random()-.5)*900,bz=(near?near.y:E.y)+(Math.random()-.5)*900;let x=bx;
+  for(let i=0;i<12;i++){a[i*3]=x;a[i*3+1]=top*(1-i/11);a[i*3+2]=bz;x+=(Math.random()-.5)*50}
+  R.bolt.geometry.attributes.position.needsUpdate=true;
+ }
+ R.flash*=Math.pow(.88,dt);if(R.flash<.02)R.flash=0;R.bolt.visible=R.flash>.3;R.flashLight.intensity=R.flash*1.1;
+
+ // chase camera
+ const cam=R.camera,hi=settings.cam==="high";
+ let dh=E.h-E.camH;dh=Math.atan2(Math.sin(dh),Math.cos(dh));E.camH+=dh*Math.min(1,.07*dt);
+ const cd0=hi?300:165,ch0=hi?210:62,elev=clamp(Math.atan2(ch0,cd0)+E.camPitch,.06,1.4),dist=Math.hypot(cd0,ch0)*E.camZoom,hz=Math.cos(elev)*dist,yaw=E.camH+E.camYaw,fx=Math.cos(yaw),fz=Math.sin(yaw),sh=Math.min(5,E.wind*.03)+E.shake*.9;
+ cam.position.set(E.x-fx*hz+(Math.random()-.5)*sh,Math.max(8,E.z*.8+Math.sin(elev)*dist)+(Math.random()-.5)*sh,E.y-fz*hz+(Math.random()-.5)*sh);
+ const la=70*Math.max(0,Math.cos(E.camYaw));cam.lookAt(E.x+Math.cos(E.camH)*la,E.z+16,E.y+Math.sin(E.camH)*la);
+ const tf=(hi?60:66)+(E.boosting?6:0)+clamp(sp/60,0,5);if(Math.abs(cam.fov-tf)>.05){cam.fov+=(tf-cam.fov)*Math.min(1,.12*dt);cam.updateProjectionMatrix()}
+ if(R.treeDirty){R.exTrunk.instanceMatrix.needsUpdate=true;R.exFoliage.instanceMatrix.needsUpdate=true;R.treeDirty=false}
+ R.sky.position.copy(cam.position);R.exClouds.position.set(E.x,0,E.y);
+ R.sun.position.set(E.x-260,640,E.y+300);R.sun.target.position.set(E.x,0,E.y);
+ R.renderer.render(R.scene,cam);
+ drawMiniMap();drawGauge();
+}
+
+/* ---------------- Explore UI: minimap, wind gauge, draw routing ---------------- */
+function rrect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+const EF_COL=["#9ad8ff","#7ee0a1","#ffc65c","#ff9a4a","#ff5a5a","#c06bff"];
+
+function drawMiniMap(){
+ const c=document.getElementById("miniMap");if(!c||!ex)return;
+ const vp=c.parentElement,vw=vp?vp.clientWidth:400,vh=vp?vp.clientHeight:300,compact=innerWidth<700||innerHeight<520,px=mmBig?Math.round(Math.max(110,Math.min(300,vw*.7,vh-24))):(compact?Math.max(84,Math.min(104,vh*.5)):150);
+ const bw=px*Math.min(2,window.devicePixelRatio||1)|0;
+ if(c._px!==px||c.width!==bw){c._px=px;c.style.width=c.style.height=px+"px";c.width=c.height=bw}
+ const g=c.getContext("2d"),S=c.width,view=mmBig?WORLD:3600,k=S/view,E=ex,cx=mmBig?WORLD/2:E.x,cy=mmBig?WORLD/2:E.y;
+ const mx=x=>(x-cx)*k+S/2,my=y=>(y-cy)*k+S/2,u=S/150;
+ g.clearRect(0,0,S,S);g.fillStyle="#2f4a33";g.fillRect(0,0,S,S);
+ g.strokeStyle="#8f948a";g.lineWidth=Math.max(1.5,56*k);
+ for(const r of ROADS){g.beginPath();g.moveTo(mx(0),my(r));g.lineTo(mx(WORLD),my(r));g.stroke();g.beginPath();g.moveTo(mx(r),my(0));g.lineTo(mx(r),my(WORLD));g.stroke()}
+ g.fillStyle="#c9a66b";for(const f of EXW.farms){if(f.dead)continue;const x=mx(f.x),y=my(f.y);if(x>-6&&y>-6&&x<S+6&&y<S+6)g.fillRect(x-2*u,y-2*u,4*u,4*u)}
+ g.strokeStyle="#0b1420";g.lineWidth=2*u;g.strokeRect(mx(0),my(0),WORLD*k,WORLD*k);
+ // tornadoes: danger ring + core + heading; off-screen ones become edge arrows
+ for(const o of E.tors){
+  const x=mx(o.x),y=my(o.y),col=EF_COL[o.ef],ring=Math.max(4*u,(THR_FREE>0?330*o.sc:0)*k*.55*o.fade);
+  if(x>=0&&y>=0&&x<=S&&y<=S){
+   g.fillStyle="rgba(255,70,70,.22)";g.beginPath();g.arc(x,y,ring,0,6.283);g.fill();
+   g.strokeStyle="rgba(255,110,110,.8)";g.lineWidth=1.2*u;g.stroke();
+   g.fillStyle=col;g.beginPath();g.arc(x,y,Math.max(3*u,5*u),0,6.283);g.fill();g.strokeStyle="#0b1420";g.lineWidth=1.2*u;g.stroke();
+   g.strokeStyle=col;g.lineWidth=1.4*u;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(o.dir)*14*u,y+Math.sin(o.dir)*14*u);g.stroke();
+   g.fillStyle="#fff";g.font="800 "+(8*u)+"px Inter,Arial";g.textAlign="center";g.fillText(EF[o.ef].n,x,y-8*u);
+  }else{
+   const a=Math.atan2(y-S/2,x-S/2),ex2=S/2+Math.cos(a)*(S/2-8*u),ey2=S/2+Math.sin(a)*(S/2-8*u);
+   g.save();g.translate(clamp(ex2,8*u,S-8*u),clamp(ey2,8*u,S-8*u));g.rotate(a);g.fillStyle=col;g.strokeStyle="#0b1420";g.lineWidth=u;
+   g.beginPath();g.moveTo(7*u,0);g.lineTo(-5*u,5*u);g.lineTo(-5*u,-5*u);g.closePath();g.fill();g.stroke();g.restore();
+  }
+ }
+ // player
+ g.save();g.translate(mx(E.x),my(E.y));g.rotate(E.h);g.fillStyle=E.bags?"#ffd25a":"#56d9ee";g.strokeStyle="#06141d";g.lineWidth=1.5*u;
+ g.beginPath();g.moveTo(8*u,0);g.lineTo(-6*u,5.5*u);g.lineTo(-3*u,0);g.lineTo(-6*u,-5.5*u);g.closePath();g.fill();g.stroke();g.restore();
+ g.fillStyle="rgba(8,13,22,.7)";g.fillRect(0,0,16*u,14*u);g.fillStyle="#fff";g.font="800 "+(10*u)+"px Inter,Arial";g.textAlign="center";g.fillText("N",8*u,11*u);
+}
+
+function drawGauge(){
+ const c=document.getElementById("windGauge");if(!c||!ex)return;
+ const g=c.getContext("2d"),W=c.width,H=c.height,E=ex,cx=W/2,cy=86,r=68,A=v=>Math.PI+clamp(v/240,0,1)*Math.PI;
+ g.clearRect(0,0,W,H);g.fillStyle="rgba(8,13,22,.74)";rrect(g,2,2,W-4,H-4,14);g.fill();g.strokeStyle="#33475d";g.lineWidth=1;g.stroke();
+ const bands=[[0,40,"#7ee0a1"],[40,80,"#ffc65c"],[80,130,"#ff9a4a"],[130,175,"#ff5a5a"],[175,240,"#c06bff"]];
+ g.lineWidth=11;g.lineCap="butt";for(const b of bands){g.strokeStyle=b[2];g.beginPath();g.arc(cx,cy,r,A(b[0]),A(b[1]));g.stroke()}
+ const thr=E.bagT>=.85?THR_BAG:THR_FREE,ta=A(thr);
+ g.strokeStyle="#fff";g.lineWidth=3;g.beginPath();g.moveTo(cx+Math.cos(ta)*(r-10),cy+Math.sin(ta)*(r-10));g.lineTo(cx+Math.cos(ta)*(r+9),cy+Math.sin(ta)*(r+9));g.stroke();
+ g.fillStyle="#fff";g.font="800 9px Inter,Arial";g.textAlign="center";g.fillText("LIFT",cx+Math.cos(ta)*(r+19),cy+Math.sin(ta)*(r+19)+3);
+ const a=A(E.wind);g.strokeStyle="#fff";g.lineWidth=3;g.lineCap="round";g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.cos(a)*(r-9),cy+Math.sin(a)*(r-9));g.stroke();
+ g.fillStyle="#eef5ff";g.beginPath();g.arc(cx,cy,5,0,6.283);g.fill();
+ const num=String(fmtWind(E.wind)),unit=" "+unitW()+"  "+efOfWind(E.wind);
+ g.font="800 26px Inter,Arial";const w1=g.measureText(num).width;g.font="700 11px Inter,Arial";const w2=g.measureText(unit).width,x0=cx-(w1+w2)/2;
+ g.textAlign="left";g.fillStyle="#eef5ff";g.font="800 26px Inter,Arial";g.fillText(num,x0,cy+26);g.fillStyle="#9fb4c9";g.font="700 11px Inter,Arial";g.fillText(unit,x0+w1,cy+26);
+ let msg,col;
+ if(E.z>2){msg=E.bagT>=.85?"AIRBORNE - AIRBAGS OUT":"AIRBORNE! DEPLOY AIRBAGS";col=E.bagT>=.85?"#ffd25a":"#ff737d"}
+ else if(E.wind>thr*.8){msg=E.bagT>=.85?"EXTREME WIND":"LIFT DANGER - AIRBAGS!";col=(Math.floor(performance.now()/300)%2)?"#ff737d":"#ffc65c"}
+ else if(E.bagT>=.85){msg="AIRBAGS DEPLOYED";col="#ffd25a"}else{msg="AIRBAGS STOWED";col="#8da3ba"}
+ g.textAlign="center";g.fillStyle=col;g.font="800 10px Inter,Arial";g.fillText(msg,cx,cy+43);
+}
+
+/* draw routing: explore uses the 3D explore renderer, mission keeps the original */
+const _drawMission=draw;
+draw=function(){if(mode==="explore"){if(R)drawEx3D();return}_drawMission()};
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("button");if(b&&gameRunning)b.blur()});
+(function(){const b=document.getElementById("bagBtn");if(b)b.addEventListener("pointerdown",e=>{e.preventDefault();toggleBags()})})();
+
+
+/* =====================================================================
+   v7: per-car upgrades, manual save, backup files, save on tab close
+   ===================================================================== */
+const ups=()=>save.carUpgrades[save.selectedCar];
+function upsLine(id,owned){if(!owned)return"";const u=save.carUpgrades[id];return`<div class="statline" style="margin-top:8px"><span>\u{1F6E1} ${u.armor}</span><span>⛽ ${u.tank}</span><span>⚙ ${u.engine}</span><span>⚡ ${u.nitro}</span><span style="opacity:.7">upgrades stay on this car</span></div>`}
+function saveKey(u){return SAVE_PREFIX+(u||saveUser)}
+function cleanSave(s){
+ s=s&&typeof s==="object"?s:{};
+ const owned=Array.isArray(s.ownedCars)?[...new Set(["silverado",...s.ownedCars.filter(x=>cars[x])])]:["silverado"];
+ const sel=cars[s.selectedCar]&&owned.includes(s.selectedCar)?s.selectedCar:"silverado",cu={};
+ for(const id of Object.keys(cars)){
+  let src=s.carUpgrades&&s.carUpgrades[id];
+  if(!src&&!s.carUpgrades&&s.upgrades&&id===sel)src=s.upgrades; // old saves shared one set of upgrades: give it to the car that was equipped
+  cu[id]=Object.fromEntries(Object.keys(upgrades).map(k=>[k,Math.max(0,Math.min(5,Math.floor(Number(src&&src[k])||0)))]));
+ }
+ return{coins:Math.max(0,Math.floor(Number(s.coins)||0)),selectedCar:sel,ownedCars:owned,carUpgrades:cu,updatedAt:Number(s.updatedAt)||0,lastCmd:String(s.lastCmd||"")};
+}
+function loadSaveFor(u){try{let raw=localStorage.getItem(saveKey(u));if(!raw&&u==="guest")raw=localStorage.getItem(SAVE_OLD);return cleanSave(raw?JSON.parse(raw):null)}catch{return cleanSave(null)}}
+function loadSave(){return loadSaveFor(saveUser)}
+function persist(){save.updatedAt=Date.now();try{localStorage.setItem(saveKey(),JSON.stringify(save))}catch{}cloudQueueSave()}
+function persistLocalOnly(){try{localStorage.setItem(saveKey(),JSON.stringify(save))}catch{}}
+function switchSaveUser(u){saveUser=u||"guest";save=loadSave();updateWallet()}
+function hasProgress(s){return s.coins>0||s.ownedCars.length>1||Object.values(s.carUpgrades).some(u=>Object.values(u).some(v=>v>0))}
+
+let lastSavedAt=0;
+function manualSave(){
+ persist();
+ const done=ok=>{lastSavedAt=Date.now();updateSaveStatus();notify(ok?(cloudUser?"Saved to your account ✓":"Saved on this device ✓"):"Saved on this device. Cloud save failed - check your connection.")};
+ if(cloudUser&&cloudReady)cloudSaveNow().then(()=>done(true)).catch(()=>done(false));else done(true);
+}
+function updateSaveStatus(){
+ const txt=(lastSavedAt?"Last saved "+new Date(lastSavedAt).toLocaleTimeString()+" - ":"")+(cloudUser?"signed in as "+(cloudUser.displayName||cloudUser.email):"playing as a guest (sign in to save to the cloud)");
+ document.querySelectorAll(".saveStatus").forEach(e=>{e.textContent=txt});
+}
+function exportSave(){
+ persist();const blob=new Blob([JSON.stringify({game:"tornado-intercepters",version:3,exportedAt:new Date().toISOString(),save},null,1)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="tornado-intercepters-save.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);notify("Backup file downloaded");
+}
+function importSave(){
+ const i=document.createElement("input");i.type="file";i.accept=".json,application/json";
+ i.onchange=()=>{const f=i.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t),n=cleanSave(o.save||o);if(!confirm("Replace your current progress with this backup ("+n.coins+" coins, "+n.ownedCars.length+" cars)?"))return;save=n;persist();updateWallet();renderSettings();notify("Backup loaded ✓")}).catch(()=>notify("That file isn't a valid save"))};
+ i.click();
+}
+function btnEl(txt,fn,cls){const b=document.createElement("button");b.className="btn small "+(cls||"");b.textContent=txt;b.addEventListener("click",fn);return b}
+function saveRow(){
+ const box=document.createElement("div");box.className="seg";
+ box.append(btnEl("\u{1F4BE} Save now",manualSave,"primary"),btnEl("⬇ Export file",exportSave),btnEl("⬆ Import file",importSave));
+ const r=setRow("Save & backup","Your game saves automatically as you play, when you leave the page, and (signed in) to your account. Save now forces it. Export / Import make a backup file you can keep or move to another device.",box);
+ const st=document.createElement("p");st.className="saveStatus";st.style.cssText="margin:8px 0 0;font-size:11px;color:#9fb4c9";r.firstChild.appendChild(st);return r;
+}
+window.addEventListener("pagehide",()=>{persist();cloudFlush()});
+document.addEventListener("visibilitychange",()=>{if(document.hidden){persist();cloudFlush()}});
+window.addEventListener("storage",e=>{if(e.key===saveKey()&&!gameRunning){save=loadSave();updateWallet()}});
+
+/* =====================================================================
+   v7 explore: ONE growing tornado, world that can be eaten, camera orbit
+   ===================================================================== */
+function spawnTornado(force){
+ const E=ex,power=force!=null?force+.2:.3+Math.random()*1.1,d=force!=null?1400:1200+Math.random()*900;let x=0,y=0;
+ for(let k=0;k<12;k++){const a=Math.random()*6.283;x=clamp(E.x+Math.cos(a)*d,300,WORLD-300);y=clamp(E.y+Math.sin(a)*d,300,WORLD-300);if(Math.hypot(x-E.x,y-E.y)>=900)break}
+ E.tors.push({x,y,power,ef:Math.floor(power),lastEf:Math.floor(power),sc:1.2+power*.45,peak:68+power*31.4,dir:Math.random()*6.283,spd:22+Math.random()*20,age:0,life:90+Math.random()*50,fade:0,eaten:0});
+ E.stormCount++;exMsg("A tornado touched down! It grows stronger as it destroys trees and farms - watch the map.");
+}
+/* the tornado steers toward the nearest standing farm, eats whatever it touches and grows */
+function growTornado(o,dt){
+ o.age+=dt;
+ let tx=ex.x,ty=ex.y,bd=3200;
+ for(const f of EXW.farms){if(f.dead)continue;const d=Math.hypot(f.x-o.x,f.y-o.y);if(d<bd){bd=d;tx=f.x;ty=f.y}}
+ o.dir+=(Math.random()-.5)*.7*dt;let da=Math.atan2(ty-o.y,tx-o.x)-o.dir;da=Math.atan2(Math.sin(da),Math.cos(da));o.dir+=da*.12*dt;
+ const sp=o.spd*(1+o.power*.12);o.x+=Math.cos(o.dir)*sp*dt;o.y+=Math.sin(o.dir)*sp*dt;
+ if(o.x<250||o.x>WORLD-250||o.y<250||o.y>WORLD-250){o.dir+=Math.PI;o.x=clamp(o.x,250,WORLD-250);o.y=clamp(o.y,250,WORLD-250)}
+ o.fade=Math.min(1,o.age/6,(o.life-o.age)/8);
+ if(o.fade>.5){
+  const rad=55*o.sc+30,tr=EXW.trees;
+  for(let i=0;i<tr.length;i++){const t=tr[i];if(t[4])continue;const dx=t[0]-o.x,dy=t[1]-o.y;if(dx*dx+dy*dy<rad*rad){eatTree(i);o.power=Math.min(5,o.power+.035);o.life+=.5;o.eaten++}}
+  for(const f of EXW.farms){if(f.dead)continue;if(Math.hypot(f.x-o.x,f.y-o.y)<rad+60){eatFarm(f);o.power=Math.min(5,o.power+.45);o.life+=6;o.eaten+=6;exMsg("The tornado tore through a farm and grew stronger!")}}
+ }
+ o.power=Math.max(.2,o.power-.004*dt);
+ o.ef=Math.min(5,Math.floor(o.power));o.sc=1.2+o.power*.45;o.peak=68+o.power*31.4;
+ if(o.ef>o.lastEf)exMsg("The tornado has grown into an "+EF[o.ef].n+"!");
+ o.lastEf=o.ef;
+}
+function eatTree(i){
+ const t=EXW.trees[i];t[4]=1;t[3][4]=1;
+ if(R&&R.exTrunk){const dm=R.treeDm;dm.position.set(0,-9999,0);dm.scale.set(0,0,0);dm.updateMatrix();R.exTrunk.setMatrixAt(i,dm.matrix);R.exFoliage.setMatrixAt(i,dm.matrix);R.treeDirty=true}
+}
+function eatFarm(f){f.dead=true;f.obs.forEach(o=>{o[4]=1});if(R&&R.farmVis&&R.farmVis[f.i])R.farmVis[f.i].visible=false}
+/* push the current world state (eaten trees / farms) to the 3D meshes */
+function syncExploreWorld(){
+ const W=EXW,dm=R.treeDm,tr=R.exTrunk,fo=R.exFoliage;
+ W.trees.forEach((t,i)=>{
+  if(t[4]){dm.position.set(0,-9999,0);dm.scale.set(0,0,0);dm.updateMatrix();tr.setMatrixAt(i,dm.matrix);fo.setMatrixAt(i,dm.matrix);return}
+  const s=t[2];dm.position.set(t[0],7*s,t[1]);dm.scale.set(2.2*s,14*s,2.2*s);dm.updateMatrix();tr.setMatrixAt(i,dm.matrix);
+  dm.position.set(t[0],30*s,t[1]);dm.scale.set(13*s,32*s,13*s);dm.updateMatrix();fo.setMatrixAt(i,dm.matrix);fo.setColorAt(i,i%2?R.treeCol[0]:R.treeCol[1]);
+ });
+ tr.instanceMatrix.needsUpdate=true;fo.instanceMatrix.needsUpdate=true;if(fo.instanceColor)fo.instanceColor.needsUpdate=true;
+ W.farms.forEach((f,i)=>{const v=R.farmVis[i];if(v)v.visible=!f.dead});
+}
+/* camera: drag / Q R / right stick to orbit, wheel to zoom, V or the CAM button to reset */
+function resetCam(){if(ex){ex.camYaw=0;ex.camPitch=0;ex.camZoom=1}}
+(function(){
+ const cv=canvas;let id=null,lx=0,ly=0;
+ cv.addEventListener("pointerdown",e=>{if(mode!=="explore"||!ex||id!==null)return;id=e.pointerId;lx=e.clientX;ly=e.clientY;try{cv.setPointerCapture(id)}catch{}});
+ cv.addEventListener("pointermove",e=>{if(e.pointerId!==id||!ex)return;ex.camYaw+=(e.clientX-lx)*.006;ex.camPitch=clamp(ex.camPitch+(e.clientY-ly)*.004,-.6,1);lx=e.clientX;ly=e.clientY});
+ for(const t of ["pointerup","pointercancel","lostpointercapture"])cv.addEventListener(t,e=>{if(e.pointerId===id)id=null});
+ cv.addEventListener("dblclick",()=>{if(mode==="explore")resetCam()});
+ cv.addEventListener("wheel",e=>{if(mode==="explore"&&ex){e.preventDefault();ex.camZoom=clamp(ex.camZoom*(e.deltaY>0?1.08:.93),.5,2.4)}},{passive:false});
+})();
+
+/* =====================================================================
+   v7: ACCOUNTS (email + Google), CLOUD SAVE, ANNOUNCEMENTS
+   Needs a free Firebase project: paste its web config below. Without it the
+   game still works fully as a guest (local save + backup file).
+   ===================================================================== */
+const FIREBASE_CONFIG={apiKey:"PASTE_API_KEY",authDomain:"PASTE_PROJECT_ID.firebaseapp.com",projectId:"PASTE_PROJECT_ID",appId:"PASTE_APP_ID"};
+const OWNER_EMAILS=["tvacc172@gmail.com"],ADMIN_EMAILS=["aston.shull@icloud.com"];
+const cloudOn=()=>!/PASTE/.test(FIREBASE_CONFIG.apiKey);
+let fb=null,fdb=null,fauth=null,cloudUser=null,cloudReady=false,cloudFail="",role="guest",extraAdmins=[],unsubPlayer=null,unsubAdmins=null,cloudSaveTimer=0,annList=[],annQueue=[],acctTab="in",acctErr="",acctMsg="";
+const el=(t,a,...k)=>{const e=document.createElement(t);if(a)for(const[x,v]of Object.entries(a)){if(x==="class")e.className=v;else if(x==="text")e.textContent=v;else if(x.startsWith("on"))e.addEventListener(x.slice(2),v);else e.setAttribute(x,v)}for(const c of k.flat())if(c!=null)e.append(c);return e};
+const addKids=(p,...k)=>{for(const c of k.flat())if(c!=null)p.append(c)};
+const computeRole=()=>{const u=cloudUser;if(!u)return"guest";const m=(u.email||"").toLowerCase();if(!u.emailVerified)return"player";if(OWNER_EMAILS.includes(m))return"owner";if(ADMIN_EMAILS.includes(m)||extraAdmins.includes(m))return"admin";return"player"};
+const isAdminRole=()=>role==="owner"||role==="admin",isOwnerRole=()=>role==="owner";
+function updateRoleUI(){
+ role=computeRole();const $=id=>document.getElementById(id);
+ $("adminBtn").style.display=isAdminRole()?"":"none";$("ownerBtn").style.display=isOwnerRole()?"":"none";
+ $("acctBtn").textContent=cloudUser?"\u{1F464} "+(cloudUser.displayName||cloudUser.email.split("@")[0]).slice(0,14):"\u{1F464} SIGN IN";
+ updateSaveStatus();
+}
+const loadScript=src=>new Promise((ok,bad)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=()=>bad(new Error("could not load the sign-in service"));document.head.appendChild(s)});
+async function initCloud(){
+ if(!cloudOn()){renderAccount();return}
+ try{
+  if(!window.firebase){const b="https://www.gstatic.com/firebasejs/10.12.2/";await loadScript(b+"firebase-app-compat.js");await Promise.all([loadScript(b+"firebase-auth-compat.js"),loadScript(b+"firebase-firestore-compat.js")])}
+  fb=window.firebase;if(!fb.apps.length)fb.initializeApp(FIREBASE_CONFIG);fauth=fb.auth();fdb=fb.firestore();
+  listenAnnouncements();fauth.onAuthStateChanged(onAuth);
+ }catch(e){cloudFail="Couldn't reach the online service ("+e.message+"). You can still play as a guest.";renderAccount()}
+}
+function stopListeners(){if(unsubPlayer){unsubPlayer();unsubPlayer=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}}
+async function onAuth(user){
+ cloudReady=false;stopListeners();
+ if(!user){cloudUser=null;extraAdmins=[];switchSaveUser("guest");updateRoleUI();renderAccount();annQueue=[];scanAnn();return}
+ try{await user.reload()}catch{}
+ cloudUser=fauth.currentUser||user;switchSaveUser(cloudUser.uid);cloudFail="";
+ try{await syncFromCloud()}catch(e){console.warn(e);cloudFail="Cloud save is unavailable right now ("+(e.code||e.message)+"). Progress is still saved on this device."}
+ cloudReady=true;startPlayerListener();listenAdmins();updateRoleUI();renderAccount();annQueue=[];scanAnn();
+ if(!cloudUser.emailVerified&&(cloudUser.providerData||[]).some(p=>p.providerId==="password"))notify("Check your email to verify your account");
+}
+async function syncFromCloud(){
+ const snap=await fdb.collection("players").doc(cloudUser.uid).get();
+ if(!snap.exists){
+  const g=loadSaveFor("guest");
+  if(hasProgress(g)&&!hasProgress(save)&&confirm("Copy the progress saved on this device into your new account?")){save=cleanSave(g);persistLocalOnly();updateWallet()}
+  await cloudSaveNow(true);return;
+ }
+ const c=cleanSave((snap.data()||{}).save);
+ if(c.updatedAt>save.updatedAt||(!hasProgress(save)&&hasProgress(c))){save=c;persistLocalOnly();updateWallet()}
+ else if(save.updatedAt>c.updatedAt)await cloudSaveNow();
+}
+function cloudSaveNow(first){
+ if(!cloudUser||!fdb)return Promise.reject(new Error("not signed in"));
+ const u=cloudUser,d={name:(u.displayName||(u.email||"player").split("@")[0]).slice(0,24),email:(u.email||"").toLowerCase(),photo:u.photoURL||"",save:JSON.parse(JSON.stringify(save)),coins:save.coins,lastSeen:fb.firestore.FieldValue.serverTimestamp()};
+ if(first)d.createdAt=fb.firestore.FieldValue.serverTimestamp();
+ return fdb.collection("players").doc(u.uid).set(d,{merge:true});
+}
+function cloudQueueSave(){if(!cloudUser||!cloudReady)return;clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(()=>cloudSaveNow().catch(()=>{}),4000)}
+function cloudFlush(){if(cloudUser&&cloudReady){clearTimeout(cloudSaveTimer);cloudSaveNow().catch(()=>{})}}
+/* the owner can give / set coins or reset a save: delivered through a command field on the player's own document */
+function startPlayerListener(){unsubPlayer=fdb.collection("players").doc(cloudUser.uid).onSnapshot(s=>{const d=s.exists&&s.data();if(!d||!d.cmd||!d.cmd.id||String(d.cmd.id)===save.lastCmd)return;applyCmd(d.cmd)},()=>{})}
+function applyCmd(c){
+ const amt=Math.max(-1e9,Math.min(1e9,Math.floor(Number(c.amount)||0)));let msg="";
+ if(c.type==="grant"){save.coins=Math.max(0,save.coins+amt);msg=(amt>=0?"You received ":"You lost ")+Math.abs(amt)+" coins from the staff."}
+ else if(c.type==="setcoins"){save.coins=Math.max(0,amt);msg="Your coins were set to "+save.coins+" by the staff."}
+ else if(c.type==="reset"){save=cleanSave(null);msg="Your save was reset by the owner."}
+ else return;
+ save.lastCmd=String(c.id);persist();updateWallet();if(document.getElementById("shopScreen").classList.contains("active"))renderShop();if(document.getElementById("garageScreen").classList.contains("active"))renderGarage();notify(msg);
+}
+function listenAdmins(){unsubAdmins=fdb.collection("config").doc("admins").onSnapshot(s=>{extraAdmins=((s.exists&&s.data().emails)||[]).map(x=>String(x).toLowerCase());updateRoleUI()},()=>{})}
+
+/* ---- global announcements ---- */
+const SEEN_KEY="tornado_intercepters_seen_msgs";
+const seenKey=()=>SEEN_KEY+"_"+(cloudUser?cloudUser.uid:"guest");
+const seenSet=()=>{try{return new Set(JSON.parse(localStorage.getItem(seenKey()))||[])}catch{return new Set()}};
+function markSeen(id){const s=seenSet();s.add(id);try{localStorage.setItem(seenKey(),JSON.stringify([...s].slice(-60)))}catch{}}
+const msgTime=m=>m.createdAt&&m.createdAt.toMillis?m.createdAt.toMillis():Date.now();
+function listenAnnouncements(){
+ fdb.collection("messages").orderBy("createdAt","desc").limit(20).onSnapshot(snap=>{
+  annList=snap.docs.map(d=>Object.assign({id:d.id},d.data()));renderAnnList();scanAnn();
+ },e=>console.warn("messages:",e.code||e.message));
+}
+function scanAnn(){
+ const seen=seenSet();
+ for(const m of annList.slice().reverse()){
+  if(seen.has(m.id))continue;
+  const mine=cloudUser&&m.fromUid===cloudUser.uid,fresh=Date.now()-msgTime(m)<864e5;
+  if(mine||!fresh){markSeen(m.id);continue}
+  if(!annQueue.some(q=>q.id===m.id))annQueue.push(m);
+ }
+ showNextAnn();
+}
+function showNextAnn(){
+ const b=document.getElementById("announce");if(!b||b.classList.contains("show")||!annQueue.length)return;
+ const m=annQueue.shift();markSeen(m.id);
+ document.getElementById("annTitle").textContent=(m.role==="owner"?"\u{1F451} Owner":"\u{1F6E1} Admin")+(m.fromName?" "+m.fromName:"")+":";
+ document.getElementById("annText").textContent=m.text;b.classList.add("show");clearTimeout(b._t);b._t=setTimeout(closeAnn,16000);buzz(20);
+}
+function closeAnn(){const b=document.getElementById("announce");b.classList.remove("show");clearTimeout(b._t);setTimeout(showNextAnn,450)}
+function renderAnnList(){
+ const p=document.getElementById("annPanel"),l=document.getElementById("annList");if(!p||!l)return;
+ l.textContent="";const top=annList.slice(0,3);p.style.display=top.length?"":"none";
+ for(const m of top)l.append(el("div",{class:"ann-row"},el("span",null,el("b",{text:(m.role==="owner"?"\u{1F451} ":"\u{1F6E1} ")+(m.fromName||"Staff")+": "}),el("span",{text:m.text}),el("small",{text:"  "+new Date(msgTime(m)).toLocaleString()}))));
+}
+
+/* ---- account screen ---- */
+const AUTH_ERR={"auth/invalid-email":"That email address doesn't look right.","auth/user-not-found":"No account with that email.","auth/wrong-password":"Wrong password.","auth/invalid-credential":"Wrong email or password.","auth/email-already-in-use":"An account with that email already exists - try signing in.","auth/weak-password":"Password must be at least 6 characters.","auth/popup-closed-by-user":"The sign-in window was closed.","auth/network-request-failed":"Network problem - check your connection.","auth/too-many-requests":"Too many tries - wait a minute and try again.","auth/unauthorized-domain":"This website isn't authorized for sign-in yet (see the setup steps).","auth/operation-not-allowed":"That sign-in method isn't switched on yet (see the setup steps)."};
+const authErr=e=>AUTH_ERR[e&&e.code]||("Something went wrong ("+((e&&(e.code||e.message))||"error")+")");
+function renderAccount(){
+ const root=document.getElementById("acctPanel");if(!root)return;root.textContent="";
+ const sub=document.getElementById("acctSub");
+ if(!cloudOn()){sub.textContent="Online accounts aren't switched on for this copy of the game yet.";root.append(el("p",{class:"muted",text:"You're playing as a guest: progress saves on this device, and you can export a backup file in Settings. To turn on accounts, Google sign-in, cloud saves, announcements and the admin / owner panels, follow the SETUP steps, then paste your Firebase config into FIREBASE_CONFIG near the top of the online section of the script."}));return}
+ if(cloudFail&&!cloudUser)root.append(el("p",{class:"errtxt",text:cloudFail}));
+ if(!fauth){if(!cloudFail)root.append(el("p",{class:"muted",text:"Connecting..."}));return}
+ if(cloudUser){signedInView(root,sub);return}
+ sub.textContent="Sign in to save your garage to the cloud and play on any device.";signInView(root);
+}
+function signInView(root){
+ const up=acctTab==="up";
+ const tabs=el("div",{class:"seg"},el("button",{class:up?"":"on",text:"Sign in",onclick:()=>{acctTab="in";acctErr="";renderAccount()}}),el("button",{class:up?"on":"",text:"Create account",onclick:()=>{acctTab="up";acctErr="";renderAccount()}}));
+ const name=el("input",{class:"field",placeholder:"Display name (2-20 characters)",maxlength:"20",autocomplete:"nickname"}),email=el("input",{class:"field",type:"email",placeholder:"Email",autocomplete:"email"}),pw=el("input",{class:"field",type:"password",placeholder:"Password (6+ characters)",autocomplete:up?"new-password":"current-password"});
+ const go=()=>submitAuth(up,name.value,email.value,pw.value);pw.addEventListener("keydown",e=>{if(e.key==="Enter")go()});
+ addKids(root,tabs,up?name:null,email,pw,el("p",{class:"errtxt",text:acctErr}),el("p",{class:"muted",text:acctMsg}),
+  el("div",{class:"actions"},el("button",{class:"btn primary",text:up?"Create account":"Sign in",onclick:go}),el("button",{class:"btn",text:"G  Continue with Google",onclick:googleSignIn})),
+  up?null:el("div",{style:"margin-top:12px"},el("button",{class:"btn small",text:"Forgot password?",onclick:()=>resetPw(email.value)})));
+}
+async function submitAuth(up,name,email,pw){
+ acctErr="";acctMsg="";email=email.trim();
+ if(!email||!pw){acctErr="Enter your email and password.";return renderAccount()}
+ if(up&&name.trim().length<2){acctErr="Pick a display name (2-20 characters).";return renderAccount()}
+ try{
+  if(up){
+   const c=await fauth.createUserWithEmailAndPassword(email,pw);
+   await c.user.updateProfile({displayName:name.trim().slice(0,20)});try{await c.user.sendEmailVerification()}catch{}
+   cloudUser=fauth.currentUser;updateRoleUI();if(cloudReady)cloudSaveNow().catch(()=>{});renderAccount();notify("Account created - check your email to verify it");
+  }else await fauth.signInWithEmailAndPassword(email,pw);
+ }catch(e){acctErr=authErr(e);renderAccount()}
+}
+async function googleSignIn(){
+ acctErr="";const p=new fb.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});
+ try{await fauth.signInWithPopup(p)}
+ catch(e){
+  if(e&&(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment")){try{await fauth.signInWithRedirect(p);return}catch(e2){e=e2}}
+  if(e&&e.code==="auth/cancelled-popup-request")return;
+  acctErr=authErr(e);renderAccount();
+ }
+}
+async function resetPw(email){
+ email=(email||"").trim();if(!email){acctErr="Type your email above first.";return renderAccount()}
+ try{await fauth.sendPasswordResetEmail(email);acctErr="";acctMsg="Password reset email sent - check your inbox.";}catch(e){acctErr=authErr(e);acctMsg=""}renderAccount();
+}
+function signedInView(root,sub){
+ const u=cloudUser;sub.textContent="You're signed in. Your garage, coins and upgrades save to your account.";
+ const badge=role==="owner"?"\u{1F451} OWNER":role==="admin"?"\u{1F6E1} ADMIN":"PLAYER";
+ const ver=u.emailVerified;
+ addKids(root,
+  el("div",{class:"acct-head"},u.photoURL?el("img",{src:u.photoURL,class:"avatar",alt:"",referrerpolicy:"no-referrer"}):el("div",{class:"avatar ph",text:(u.displayName||u.email||"?")[0].toUpperCase()}),el("div",null,el("h3",{text:u.displayName||u.email}),el("p",{class:"muted",text:u.email}),el("span",{class:"badge",text:badge}))),
+  cloudFail?el("p",{class:"errtxt",text:cloudFail}):null,
+  ver?null:el("p",{class:"errtxt",text:"Your email isn't verified yet. Verify it (the link we emailed you) to finish setting up - staff features need a verified email."}),
+  ver?null:el("div",{class:"actions"},el("button",{class:"btn small",text:"Resend verification email",onclick:async()=>{try{await u.sendEmailVerification();notify("Verification email sent")}catch(e){notify(authErr(e))}}}),el("button",{class:"btn small",text:"I verified it",onclick:async()=>{try{await u.reload();await u.getIdToken(true);cloudUser=fauth.currentUser;updateRoleUI();renderAccount()}catch(e){notify(authErr(e))}}})),
+  el("p",{class:"muted saveStatus",text:""}),
+  el("div",{class:"actions"},el("button",{class:"btn primary",text:"\u{1F4BE} Save now",onclick:manualSave}),el("button",{class:"btn danger",text:"Sign out",onclick:()=>{cloudFlush();fauth.signOut()}})));
+ updateSaveStatus();
+}
+
+/* ---------------- Admin panel (owner + admins) and Owner panel (owner only) ----------------
+   NOTE: hiding the buttons is only cosmetic. The real protection is the Firestore security
+   rules (firestore.rules) which check the verified email on every request. */
+const staffName=()=>(cloudUser.displayName||cloudUser.email.split("@")[0]).slice(0,24);
+const dateOf=t=>t&&t.toDate?t.toDate().toLocaleString():"-";
+async function sendAnnouncement(text){
+ text=(text||"").trim();if(!text){notify("Type a message first");return false}
+ if(text.length>280){notify("Max 280 characters");return false}
+ await fdb.collection("messages").add({text,fromName:staffName(),fromUid:cloudUser.uid,role:isOwnerRole()?"owner":"admin",createdAt:fb.firestore.FieldValue.serverTimestamp()});
+ notify("Message sent to everyone playing ✓");return true;
+}
+function eyebrow(t,top){return el("div",{class:"eyebrow",style:top?"margin-top:24px":"",text:t})}
+function playersTable(docs,owner){
+ const t=el("table",{class:"tbl"});
+ t.append(el("tr",null,...["Name","Email","Coins","Cars","Last seen"].map(x=>el("th",{text:x})),owner?el("th",{text:"Actions"}):null));
+ for(const d of docs){
+  const p=d.data(),sv=p.save||{},tr=el("tr",null,el("td",{text:p.name||"?"}),el("td",{text:p.email||""}),el("td",{text:String(p.coins!=null?p.coins:0)}),el("td",{text:String((sv.ownedCars||[]).length)}),el("td",{text:dateOf(p.lastSeen)}));
+  if(owner)tr.append(el("td",null,el("button",{class:"btn small",text:"+ coins",onclick:()=>ownerCmd(d.id,p,"grant")}),el("button",{class:"btn small",text:"set coins",onclick:()=>ownerCmd(d.id,p,"setcoins")}),el("button",{class:"btn small danger",text:"reset save",onclick:()=>ownerCmd(d.id,p,"reset")})));
+  t.append(tr);
+ }
+ return t;
+}
+async function loadPlayers(box,owner){
+ box.textContent="";
+ try{const s=await fdb.collection("players").orderBy("lastSeen","desc").limit(100).get();box.append(s.docs.length?playersTable(s.docs,owner):el("p",{class:"muted",text:"No players yet."}))}
+ catch(e){box.append(el("p",{class:"errtxt",text:"Couldn't load players ("+(e.code||e.message)+")"}))}
+}
+async function renderAdmin(){
+ const root=document.getElementById("adminPanel");root.textContent="";
+ if(!isAdminRole()){root.append(el("p",{class:"errtxt",text:"Staff only. Sign in with a staff account (verified email)."}));return}
+ const ta=el("textarea",{class:"field",maxlength:"280",rows:"3",placeholder:"Message to everyone playing (max 280 characters)"}),cnt=el("small",{class:"muted",text:"0 / 280"});
+ ta.addEventListener("input",()=>{cnt.textContent=ta.value.length+" / 280"});
+ root.append(eyebrow("GLOBAL MESSAGE"),ta,cnt,el("div",{class:"actions"},el("button",{class:"btn primary",text:"\u{1F4E2} Send to everyone",onclick:async()=>{try{if(await sendAnnouncement(ta.value)){ta.value="";cnt.textContent="0 / 280";setTimeout(renderAdmin,500)}}catch(e){notify("Couldn't send: "+(e.code||e.message))}}})));
+ root.append(eyebrow("RECENT MESSAGES",1));
+ if(!annList.length)root.append(el("p",{class:"muted",text:"No messages yet."}));
+ for(const m of annList)root.append(el("div",{class:"ann-row"},el("span",{text:(m.role==="owner"?"\u{1F451} ":"\u{1F6E1} ")+(m.fromName||"")+": "+m.text}),el("button",{class:"btn small danger",text:"Delete",onclick:async()=>{try{await fdb.collection("messages").doc(m.id).delete();notify("Deleted");setTimeout(renderAdmin,400)}catch(e){notify("Couldn't delete ("+(e.code||e.message)+")")}}})));
+ root.append(eyebrow("PLAYERS (latest 100)",1));const box=el("div",{class:"tblwrap"});root.append(box);await loadPlayers(box,false);
+}
+async function ownerCmd(uid,p,type){
+ let amount=0;
+ if(type==="reset"){if(!confirm("Reset "+(p.name||p.email)+"'s save? They lose all coins, cars and upgrades."))return}
+ else{const v=prompt(type==="grant"?"Coins to give "+(p.name||"this player")+" (negative removes coins):":"Set "+(p.name||"this player")+"'s coins to:","500");if(v===null)return;amount=Math.floor(Number(v));if(!Number.isFinite(amount)){notify("Enter a number");return}}
+ try{await fdb.collection("players").doc(uid).update({cmd:{id:Date.now()+"-"+Math.random().toString(36).slice(2,7),type,amount,by:cloudUser.email,ts:Date.now()}});notify("Sent ✓ (applies when the player is online)")}
+ catch(e){notify("Failed: "+(e.code||e.message))}
+}
+async function renderOwner(){
+ const root=document.getElementById("ownerPanel");root.textContent="";
+ if(!isOwnerRole()){root.append(el("p",{class:"errtxt",text:"Owner only."}));return}
+ root.append(eyebrow("ROLES"),el("p",{class:"muted",text:"Owner (both panels): "+OWNER_EMAILS.join(", ")+"   |   Built-in admin: "+ADMIN_EMAILS.join(", ")+".  Staff must sign in with a VERIFIED email."}));
+ const inp=el("input",{class:"field",type:"email",placeholder:"email address to make an admin"});
+ root.append(eyebrow("EXTRA ADMINS",1),inp,el("div",{class:"actions"},el("button",{class:"btn primary",text:"Add admin",onclick:async()=>{const v=inp.value.trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(v)){notify("Enter a valid email");return}try{await fdb.collection("config").doc("admins").set({emails:fb.firestore.FieldValue.arrayUnion(v)},{merge:true});notify("Admin added");setTimeout(renderOwner,500)}catch(e){notify("Failed: "+(e.code||e.message))}}})));
+ if(!extraAdmins.length)root.append(el("p",{class:"muted",text:"No extra admins."}));
+ for(const m of extraAdmins)root.append(el("div",{class:"ann-row"},el("span",{text:m}),el("button",{class:"btn small danger",text:"Remove",onclick:async()=>{try{await fdb.collection("config").doc("admins").set({emails:fb.firestore.FieldValue.arrayRemove(m)},{merge:true});notify("Removed");setTimeout(renderOwner,500)}catch(e){notify("Failed: "+(e.code||e.message))}}})));
+ root.append(eyebrow("PLAYERS",1),el("p",{class:"muted",text:"Give coins, set coins or reset a save. Changes apply the next time that player is online."}));
+ const box=el("div",{class:"tblwrap"});root.append(box);await loadPlayers(box,true);
+ root.append(eyebrow("DANGER ZONE",1),el("div",{class:"actions"},el("button",{class:"btn danger",text:"Delete ALL messages",onclick:async()=>{if(!confirm("Delete every global message?"))return;try{const s=await fdb.collection("messages").get();await Promise.all(s.docs.map(d=>d.ref.delete()));notify("All messages deleted")}catch(e){notify("Failed: "+(e.code||e.message))}}})));
+}
+
+
+window.addEventListener("keydown",e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(k))e.preventDefault();if((k==="p"||k==="Escape")&&gameRunning&&!e.repeat)togglePause();if(mode==="explore"&&gameRunning&&!paused&&!e.repeat){if(k==="e")toggleBags();if(k==="m")toggleBigMap();if(k==="v")resetCam()}keys[k]=true});
+window.addEventListener("keyup",e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys[k]=false});
+window.addEventListener("blur",()=>{keys={};resetTouch();if(gameRunning&&!paused)setPaused(true)});
+document.addEventListener("visibilitychange",()=>{if(document.hidden){keys={};resetTouch();if(gameRunning&&!paused)setPaused(true)}else if(gameRunning)lockScreen()});
+
+/* ---------- Touch controls: virtual joystick + nitro button (multi-touch safe) ---------- */
+const isTouchDevice=("ontouchstart" in window)||navigator.maxTouchPoints>0||(window.matchMedia&&matchMedia("(pointer:coarse)").matches);
+if(isTouchDevice){
+ document.body.classList.add("touch");
+ document.getElementById("controlsHint").innerHTML="<b>Left stick</b> to drive &nbsp;•&nbsp; <b>NITRO</b> button to boost";
+}
+(function setupTouch(){
+ const base=document.getElementById("joyBase"),knob=document.getElementById("joyKnob"),nitro=document.getElementById("nitroBtn"),zone=document.getElementById("joyZone"),ctl=document.getElementById("touchControls");
+ let joyId=null,nitroId=null;
+ function clearPlacement(){const st=base.style;st.left="";st.top="";st.right="";st.bottom="";st.margin=""}
+ function placeBase(e){const r=ctl.getBoundingClientRect(),w=base.offsetWidth,st=base.style,x=clamp(e.clientX-r.left,w/2,Math.max(w/2,r.width-w/2)),y=clamp(e.clientY-r.top,w/2,Math.max(w/2,r.height-w/2));st.left=(x-w/2)+"px";st.top=(y-w/2)+"px";st.right="auto";st.bottom="auto";st.margin="0"}
+ function moveStick(e){
+  const r=base.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,max=r.width/2-8;
+  let ox=e.clientX-cx,oy=e.clientY-cy;const d=Math.hypot(ox,oy);
+  if(d>max){ox=ox/d*max;oy=oy/d*max}
+  knob.style.transform="translate("+ox+"px,"+oy+"px)";
+  const nx=ox/max,ny=oy/max,m=Math.hypot(nx,ny);
+  if(m<.12){touch.active=false;touch.x=0;touch.y=0}else{touch.active=true;touch.x=nx;touch.y=ny}
+ }
+ function endStick(){joyId=null;touch.active=false;touch.x=0;touch.y=0;knob.style.transform="translate(0px,0px)";base.classList.remove("active");clearPlacement()}
+ function down(e,el){if(joyId!==null)return;e.preventDefault();joyId=e.pointerId;try{el.setPointerCapture(e.pointerId)}catch{}if(el===zone)placeBase(e);base.classList.add("active");moveStick(e)}
+ for(const el of [base,zone]){
+  el.addEventListener("pointerdown",e=>down(e,el));
+  el.addEventListener("pointermove",e=>{if(e.pointerId!==joyId)return;e.preventDefault();moveStick(e)});
+  for(const t of ["pointerup","pointercancel","lostpointercapture"])el.addEventListener(t,e=>{if(e.pointerId===joyId)endStick()});
+ }
+ nitro.addEventListener("pointerdown",e=>{if(nitroId!==null)return;e.preventDefault();nitroId=e.pointerId;try{nitro.setPointerCapture(e.pointerId)}catch{}touch.nitro=true;nitro.classList.add("active");buzz(8)});
+ const endNitro=e=>{if(e.pointerId!==nitroId)return;nitroId=null;touch.nitro=false;nitro.classList.remove("active")};
+ for(const t of ["pointerup","pointercancel","lostpointercapture"])nitro.addEventListener(t,endNitro);
+ // block long-press menus, scrolling and pinch-zoom while playing
+ ctl.addEventListener("contextmenu",e=>e.preventDefault());
+ canvas.addEventListener("contextmenu",e=>e.preventDefault());
+ document.addEventListener("touchmove",e=>{if(gameRunning&&e.cancelable&&e.target.closest&&e.target.closest("#gameScreen .game-wrap"))e.preventDefault()},{passive:false});
+ ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
+ // rotating the phone mid-run: reset touches, recalibrate tilt and pause so you can re-grip
+ window.addEventListener("orientationchange",()=>{endStick();touch.nitro=false;nitroId=null;nitro.classList.remove("active");tilt.base=null;if(gameRunning&&!paused)setPaused(true)});
+})();
+applySettings();
+if(!init3D()){R=null;ctx=canvas.getContext("2d")}else{applyQuality(startLevel())}
+{const fb=document.getElementById("fsBtn");if(fb&&!(document.fullscreenEnabled||document.webkitFullscreenEnabled))fb.style.display="none"}
+updateWallet();
+initCloud();updateRoleUI();
+</script>
+</body>
+</html>
